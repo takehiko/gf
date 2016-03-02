@@ -16,7 +16,7 @@ require_relative "root.rb"
 require "optparse"
 
 module GFLoad
-  class Estimator
+  class Trigonal
     include GFLoad::Helper
 
     def initialize(param = {})
@@ -299,5 +299,5 @@ if __FILE__ == $0
          "Print verbose info") { h[:print] = :verbose }
   opt.parse!(ARGV)
   srand(seed)
-  GFLoad::Estimator.new(h).start
+  GFLoad::Trigonal.new(h).start
 end
