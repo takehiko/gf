@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-# gfload.rb : Save as Excel, Load Calculator for Gymnastic Formation
+# excel.rb : Save Load Calculation for Gymnastic Formation as an Excel File
 #   by takehikom
 
-require_relative "gfload.rb"
+require_relative "root.rb"
 require "rubyXL"
 
 module GFLoad
