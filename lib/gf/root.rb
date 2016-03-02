@@ -50,6 +50,8 @@ module GFLoad
         build_pyramid_triangle(@opt[:triangle])
       elsif @opt.key?(:pyramid)
         build_pyramid_trigonal(@opt[:pyramid])
+      elsif @opt.key?(:yagura)
+        build_yagura(:person => @opt[:yagura])
       else
         p11 = GFLoad::Person.new(:name => "1-1"); add_person(p11)
         p12 = GFLoad::Person.new(:name => "1-2"); add_person(p12)
@@ -149,6 +151,11 @@ module GFLoad
           end
         end
       end
+    end
+
+    def build_yagura(opt = {})
+      require_relative "yagura.rb"
+      build_yagura_by_person(opt[:person] || 5)
     end
 
     def to_s
