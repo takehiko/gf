@@ -22,6 +22,8 @@ if __FILE__ == $0
          "Print DOT (Graphviz) code") { h[:print] = :dot }
   opt.on("-z", "--generate",
          "Generate cases") { h[:g] = true }
+  opt.on("-s", "--seed=VAL",
+         "Random seed") {|v| srand(v.to_i)}
   opt.on("-a", "--from-programmer", "Message from the programmer") {
     puts <<'EOS'
 The programmer earnestly hopes that this program is used for evaluating
