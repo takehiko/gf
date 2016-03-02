@@ -129,16 +129,17 @@ if __FILE__ == $0
     gf.build_pyramid_trigonal(level)
     gf.to_excel
   when /^e/i
-    require_relative "pyramid.rb"
+    require_relative "trigonal.rb"
+
     level = (ARGV.shift || 5).to_i
-    est = GFLoad::Estimator.new(:level => level, :print => false, :plc => 4)
+    est = GFLoad::Trigonal.new(:level => level, :print => false, :plc => 4)
     est.start
     gf = est.gf
     gf.opt[:workbook_name] = "gfload_est#{level}.xlsx"
     gf.opt[:sheet_name] = "Trigonal #{level}"
     gf.to_excel
   when /^a/i
-    require_relative "pyramid.rb"
+    require_relative "trigonal.rb"
 
     2.upto(8) do |level|
       gf = GFLoad::Formation.new(:triangle => level,
@@ -157,7 +158,7 @@ if __FILE__ == $0
     end
 
     4.upto(11) do |level|
-      est = GFLoad::Estimator.new(:level => level, :print => false, :plc => 4)
+      est = GFLoad::Trigonal.new(:level => level, :print => false, :plc => 4)
       est.start
       gf = est.gf
       gf.opt[:workbook_name] = "gfload_est#{level}.xlsx"

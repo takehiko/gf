@@ -1,22 +1,22 @@
 #!/usr/bin/env ruby
 
-# pyramid.rb - Load Estimator of Trigonal Human Pyramids
+# trigonal.rb - Load Estimator of Trigonal Human Pyramids
 #   by takehikom
 # see also:
 #   https://gist.github.com/takehiko/a32f51e2eabba4f821d8
 #   http://d.hatena.ne.jp/takehikom/20151019/1445266799
 # usage:
-#   ruby lib/gf/pyramid.rb
-#   ruby lib/gf/pyramid.rb -p 7 -m 0
-#   ruby lib/gf/pyramid.rb -p 7 -m 1
-#   ruby lib/gf/pyramid.rb -p 7 -m 2
-#   ruby lib/gf/pyramid.rb -p 7 -m 4
+#   ruby lib/gf/trigonal.rb
+#   ruby lib/gf/trigonal.rb -p 7 -m 0
+#   ruby lib/gf/trigonal.rb -p 7 -m 1
+#   ruby lib/gf/trigonal.rb -p 7 -m 2
+#   ruby lib/gf/trigonal.rb -p 7 -m 4
 
 require_relative "root.rb"
 require "optparse"
 
 module GFLoad
-  class Estimator
+  class Trigonal
     include GFLoad::Helper
 
     def initialize(param = {})
@@ -94,39 +94,7 @@ module GFLoad
     end
 
     def init_weight_a
-      # 分布は，政府統計の総合窓口
-      # http://www.e-stat.go.jp/SG1/estat/eStatTopPortal.do
-      # の体力・運動能力調査 > 平成２６年度 > 学校段階別体格測定の結果より，
-      # 小学校11男子と中学校12男子の体重の平均値・標準偏差をもとにした．
-      avg = (37.82 + 43.86) / 2
-      sd = Math.sqrt((7.40 ** 2 + 8.31 ** 2) / 2)
-      # 小学校11男子のみであれば，以下のコメントを外す
-      # avg = 37.82; sd = 7.40
-      @weight_a = generate_random_bm(avg, sd, @gf.mem.size, @zmax)
-    end
-
-    def generate_random_bm(avg, sd, size, zmax = 2)
-      # ボックス=ミュラー法を用いて，平均avg, 分散sd**2の正規分布から
-      # size個の乱数を生成しリストにして返す
-      # seedは乱数生成の種
-      # zmaxが正のとき，乱数のz値の絶対値がzmaxを超えるものは使用しない
-      # zmaxが0のとき，size個のavgからなるリストを返す
-      # zmaxが負のとき，値の間引きは行わない
-
-      if zmax == 0
-        return [avg] * size
-      end
-
-      (1..size).to_a.map do
-        begin
-          begin
-            r1, r2 = rand, rand
-          end while r1 == 0.0 || r2 == 0.0
-          v = Math.sqrt(-2 * Math.log(r1)) * Math.cos(2 * Math::PI * r2)
-          puts "debug: v=#{v}, #{v.abs <= zmax ? 'ok' : 'ng'}" if $DEBUG
-        end while v.abs > zmax
-        sd * v + avg
-      end
+      @weight_a = sample(@gf.mem.size, @zmax)
     end
 
     def place1
@@ -299,5 +267,5 @@ if __FILE__ == $0
          "Print verbose info") { h[:print] = :verbose }
   opt.parse!(ARGV)
   srand(seed)
-  GFLoad::Estimator.new(h).start
+  GFLoad::Trigonal.new(h).start
 end
