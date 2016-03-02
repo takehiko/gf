@@ -34,6 +34,42 @@ module GFLoad
     def change_separator(s)
       s.split(SEPARATOR).join(SEPARATOR2)
     end
+
+    def sample(size, zmax)
+      # 分布は，政府統計の総合窓口
+      # http://www.e-stat.go.jp/SG1/estat/eStatTopPortal.do
+      # の体力・運動能力調査 > 平成２６年度 > 学校段階別体格測定の結果より，
+      # 小学校11男子と中学校12男子の体重の平均値・標準偏差をもとにした．
+      avg = (37.82 + 43.86) / 2
+      sd = Math.sqrt((7.40 ** 2 + 8.31 ** 2) / 2)
+      # 小学校11男子のみであれば，以下のコメントを外す
+      # avg = 37.82; sd = 7.40
+      generate_random_bm(avg, sd, size, zmax)
+    end
+
+    def generate_random_bm(avg, sd, size, zmax = 2)
+      # ボックス=ミュラー法を用いて，平均avg, 分散sd**2の正規分布から
+      # size個の乱数を生成しリストにして返す
+      # seedは乱数生成の種
+      # zmaxが正のとき，乱数のz値の絶対値がzmaxを超えるものは使用しない
+      # zmaxが0のとき，size個のavgからなるリストを返す
+      # zmaxが負のとき，値の間引きは行わない
+
+      if zmax == 0
+        return [avg] * size
+      end
+
+      (1..size).to_a.map do
+        begin
+          begin
+            r1, r2 = rand, rand
+          end while r1 == 0.0 || r2 == 0.0
+          v = Math.sqrt(-2 * Math.log(r1)) * Math.cos(2 * Math::PI * r2)
+          puts "debug: v=#{v}, #{v.abs <= zmax ? 'ok' : 'ng'}" if $DEBUG
+        end while v.abs > zmax
+        sd * v + avg
+      end
+    end
   end
 
   class Formation
@@ -52,6 +88,14 @@ module GFLoad
         build_pyramid_trigonal(@opt[:pyramid])
       elsif @opt.key?(:yagura)
         build_yagura(:person => @opt[:yagura])
+        case @opt[:plc]
+        when Array
+          set_yagura_weight(@opt[:plc])
+        when /,/
+          set_yagura_weight(@opt[:plc].split(/,/))
+        when "4"
+          place_yagura_weight4
+        end
       else
         p11 = GFLoad::Person.new(:name => "1-1"); add_person(p11)
         p12 = GFLoad::Person.new(:name => "1-2"); add_person(p12)

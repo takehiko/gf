@@ -10,8 +10,10 @@ if __FILE__ == $0
          "Build triangular human pyramid") {|v| h[:triangle] = v.to_i }
   opt.on("-p", "--pyramid=VAL",
          "Build trigonal human pyramid") {|v| h[:pyramid] = v.to_i }
-  opt.on("-t", "--yagura=VAL",
+  opt.on("-y", "--yagura=VAL",
          "Build wider tower (a.k.a. yagura)") {|v| h[:yagura] = v.to_i }
+  opt.on("-m", "--placement=VAL",
+         "Placement Method") {|v| h[:plc] = v.dup}
   opt.on("-v", "--verbose",
          "Print verbose info") { h[:print] = :verbose }
   opt.on("-r", "--ruby",
