@@ -1,18 +1,18 @@
 #!/usr/bin/env ruby
 
-# gfload_est.rb - Load Estimator of Trigonal Human Pyramids
+# pyramid.rb - Load Estimator of Trigonal Human Pyramids
 #   by takehikom
 # see also:
 #   https://gist.github.com/takehiko/a32f51e2eabba4f821d8
 #   http://d.hatena.ne.jp/takehikom/20151019/1445266799
 # usage:
-#   ruby gfload_est.rb
-#   ruby gfload_est.rb -p 7 -m 0
-#   ruby gfload_est.rb -p 7 -m 1
-#   ruby gfload_est.rb -p 7 -m 2
-#   ruby gfload_est.rb -p 7 -m 4
+#   ruby lib/gf/pyramid.rb
+#   ruby lib/gf/pyramid.rb -p 7 -m 0
+#   ruby lib/gf/pyramid.rb -p 7 -m 1
+#   ruby lib/gf/pyramid.rb -p 7 -m 2
+#   ruby lib/gf/pyramid.rb -p 7 -m 4
 
-require_relative "gfload.rb"
+require_relative "root.rb"
 require "optparse"
 
 module GFLoad

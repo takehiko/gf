@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 
-# gf_build.rb - How to Build Trigonal Human Pyramids
+# pyramid_build.rb - How to Build Trigonal Human Pyramids
 #   by takehikom
 # see also:
 #   https://gist.github.com/takehiko/a32f51e2eabba4f821d8
 #   http://d.hatena.ne.jp/takehikom/20151020/1445266800
 # usage:
-#   ruby gf_build.rb
-#   ruby gf_build.rb -p 11
+#   ruby lib/gf/pyramid_build.rb
+#   ruby lib/gf/pyramid_build.rb -p 11
 
-require_relative "gfload.rb"
+require_relative "root.rb"
 require "optparse"
 
 class GFBuild
