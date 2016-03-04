@@ -202,14 +202,21 @@ module GFLoad
       build_yagura_by_person(opt[:person] || 5)
     end
 
-    def to_s
+    def to_s(opt_short = false)
       s = "%d persons, total_weight=%g, max_load=%g" %
         [size, total_weight, max_load_weight]
-      h = to_h_load
-      a = sort_name(h.keys)
-      s2 = "[" + a.map {|name| "#{name}:#{h[name]}"}.join(", ") + "]"
-      s2 += "load: #{s}"
-      s
+#      h = to_h_load
+#      a = sort_name(h.keys)
+#      s2 = "[" + a.map {|name| "#{name}:#{h[name]}"}.join(", ") + "]"
+#      s2 += "load: #{s}"
+      return s if opt_short
+
+      sum = summary
+      s2 = "max_rate=%g (name=%s, weight=%g, load=%g)" %
+        [sum[:person_max_load_rate], sum[:person_max_load_name],
+        sum[:person_max_load_weight], sum[:person_max_load]]
+
+      [s, s2].join(", ")
     end
 
     def member
@@ -240,6 +247,30 @@ module GFLoad
     def to_h_load
       # person_name => load_weight
       Hash[*member.map {|person| [person.name, person.load_weight]}.flatten]
+    end
+
+    def summary
+      raise if size < 1
+
+      sum = Hash.new
+      sum[:person] = size
+      sum[:total_weight] = total_weight
+      sum[:max_load_weight] = max_load_weight
+      p_max = member.sort_by {|p| p.load_weight_rate}.last
+      sum[:person_max_load_rate] = p_max.load_weight_rate
+      sum[:person_max_load_name] = p_max.name # one person only
+      sum[:person_max_load_weight] = p_max.weight
+      sum[:person_max_load] = p_max.load_weight
+
+      sum
+    end
+    alias :summary_h :summary
+
+    def summary_a
+      sum = summary
+      [sum[:person], sum[:total_weight], sum[:max_load_weight],
+        sum[:person_max_load_rate], sum[:person_max_load_name],
+        sum[:person_max_load_weight], sum[:person_max_load]]
     end
 
     def to_ruby
