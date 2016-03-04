@@ -16,6 +16,63 @@ require_relative "root.rb"
 require "optparse"
 
 module GFLoad
+  class Formation
+    def build_pyramid_trigonal(level = 4)
+      # トップダウンで三角錐型（立体型）ピラミッドを構成
+      raise if level < 3
+
+      name_top = compose_name(level, 1, 1)
+      p = GFLoad::Person.new(:name => name_top)
+      add_person(p)
+
+      name_a = [compose_name(level - 1, 1, 1), compose_name(level - 1, 1, 2)]
+      name_a.each do |name|
+        p = GFLoad::Person.new(:name => name)
+        add_person(p)
+        @mem[name_top].put_load(p, 0.5)
+      end
+
+      until name_a.empty?
+        name = name_a.shift
+        p = @mem[name]
+
+        i, j, k = decompose_name(name)
+
+        if i >= 3
+          i2 = i - 2
+          j2 = j + 1
+          [k, k + 1].each do |k2|
+            name2 = compose_name(i2, j2, k2)
+            if !@mem.key?(name2)
+              p2 = GFLoad::Person.new(:name => name2)
+              add_person(p2)
+              name_a << name2
+            else
+              p2 = @mem[name2]
+            end
+            p.put_load(p2, 0.35)
+          end
+        end
+
+        if i >= 2
+          i2 = i - 1
+          j2 = j
+          [k, k + 1].each do |k2|
+            name2 = compose_name(i2, j2, k2)
+            if !@mem.key?(name2)
+              p2 = GFLoad::Person.new(:name => name2)
+              add_person(p2)
+              name_a << name2
+            else
+              p2 = @mem[name2]
+            end
+            p.put_load(p2, 0.15)
+          end
+        end
+      end
+    end
+  end
+
   class Trigonal
     include GFLoad::Helper
 

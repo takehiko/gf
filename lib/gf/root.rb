@@ -86,9 +86,11 @@ module GFLoad
         require_relative "triangle.rb"
         build_pyramid_triangle(@opt[:triangle])
       elsif @opt.key?(:pyramid)
+        require_relative "trigonal.rb"
         build_pyramid_trigonal(@opt[:pyramid])
       elsif @opt.key?(:yagura)
-        build_yagura(:person => @opt[:yagura])
+        require_relative "yagura.rb"
+        build_yagura_by_person(@opt[:yagura])
         case @opt[:plc]
         when Array
           set_yagura_weight(@opt[:plc])
@@ -127,73 +129,10 @@ module GFLoad
       end
     end
 
-    def build_pyramid_trigonal(level = 4)
-      # トップダウンで三角錐型（立体型）ピラミッドを構成
-      raise if level < 3
-
-      name_top = compose_name(level, 1, 1)
-      p = GFLoad::Person.new(:name => name_top)
-      add_person(p)
-
-      name_a = [compose_name(level - 1, 1, 1), compose_name(level - 1, 1, 2)]
-      name_a.each do |name|
-        p = GFLoad::Person.new(:name => name)
-        add_person(p)
-        @mem[name_top].put_load(p, 0.5)
-      end
-
-      until name_a.empty?
-        name = name_a.shift
-        p = @mem[name]
-
-        i, j, k = decompose_name(name)
-
-        if i >= 3
-          i2 = i - 2
-          j2 = j + 1
-          [k, k + 1].each do |k2|
-            name2 = compose_name(i2, j2, k2)
-            if !@mem.key?(name2)
-              p2 = GFLoad::Person.new(:name => name2)
-              add_person(p2)
-              name_a << name2
-            else
-              p2 = @mem[name2]
-            end
-            p.put_load(p2, 0.35)
-          end
-        end
-
-        if i >= 2
-          i2 = i - 1
-          j2 = j
-          [k, k + 1].each do |k2|
-            name2 = compose_name(i2, j2, k2)
-            if !@mem.key?(name2)
-              p2 = GFLoad::Person.new(:name => name2)
-              add_person(p2)
-              name_a << name2
-            else
-              p2 = @mem[name2]
-            end
-            p.put_load(p2, 0.15)
-          end
-        end
-      end
-    end
-
-    def build_yagura(opt = {})
-      require_relative "yagura.rb"
-      build_yagura_by_person(opt[:person] || 5)
-    end
-
     def to_s(opt_short = false)
       s = "%d persons, total_weight=%g, max_load=%g" %
         [size, total_weight, max_load_weight]
-#      h = to_h_load
-#      a = sort_name(h.keys)
-#      s2 = "[" + a.map {|name| "#{name}:#{h[name]}"}.join(", ") + "]"
-#      s2 += "load: #{s}"
+
       return s if opt_short
 
       sum = summary
