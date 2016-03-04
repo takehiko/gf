@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 module GFLoad
   class Formation
     def build_yagura_by_person(size = 5)
