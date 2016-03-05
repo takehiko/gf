@@ -78,25 +78,30 @@ module GFLoad
     def initialize(h = nil)
       @mem = {} # name => Personインスタンス
       @opt = h || {}
+      @level = 0
     end
-    attr_accessor :mem, :opt
+    attr_accessor :mem, :opt, :level
 
     def start
+      method_plc = nil
+
       if @opt.key?(:triangle)
+        require_relative "triangle.rb"
         build_pyramid_triangle(@opt[:triangle])
       elsif @opt.key?(:pyramid)
+        require_relative "trigonal.rb"
         build_pyramid_trigonal(@opt[:pyramid])
+        if @opt[:plc]
+          method_plc = :set_trigonal_plc
+        end
       elsif @opt.key?(:yagura)
-        build_yagura(:person => @opt[:yagura])
-        case @opt[:plc]
-        when Array
-          set_yagura_weight(@opt[:plc])
-        when /,/
-          set_yagura_weight(@opt[:plc].split(/,/))
-        when "4"
-          place_yagura_weight4
+        require_relative "yagura.rb"
+        build_yagura_by_person(@opt[:yagura])
+        if @opt[:plc]
+          method_plc = :set_yagura_plc
         end
       else
+        @level = 3
         p11 = GFLoad::Person.new(:name => "1-1"); add_person(p11)
         p12 = GFLoad::Person.new(:name => "1-2"); add_person(p12)
         p13 = GFLoad::Person.new(:name => "1-3"); add_person(p13)
@@ -109,6 +114,10 @@ module GFLoad
         p31 = GFLoad::Person.new(:name => "3-1"); add_person(p31)
         p31.put_load(p21, 0.5)
         p31.put_load(p22, 0.5)
+      end
+
+      if method_plc
+        send(method_plc, @opt[:plc])
       end
 
       case @opt[:print]
@@ -126,89 +135,10 @@ module GFLoad
       end
     end
 
-    def build_pyramid_triangle(level = 3)
-      # ボトムアップで三角型（俵型）ピラミッドを構成
-      1.upto(level) do |i|
-        1.upto(level - i + 1) do |j|
-          name = compose_name(i, j)
-          p = GFLoad::Person.new(:name => name); add_person(p)
-          if i > 1
-            [j, j + 1].each do |j2|
-              name2 = compose_name(i - 1, j2)
-              p.put_load(@mem[name2], 0.5)
-            end
-          end
-        end
-      end
-    end
-
-    def build_pyramid_trigonal(level = 4)
-      # トップダウンで三角錐型（立体型）ピラミッドを構成
-      raise if level < 3
-
-      name_top = compose_name(level, 1, 1)
-      p = GFLoad::Person.new(:name => name_top)
-      add_person(p)
-
-      name_a = [compose_name(level - 1, 1, 1), compose_name(level - 1, 1, 2)]
-      name_a.each do |name|
-        p = GFLoad::Person.new(:name => name)
-        add_person(p)
-        @mem[name_top].put_load(p, 0.5)
-      end
-
-      until name_a.empty?
-        name = name_a.shift
-        p = @mem[name]
-
-        i, j, k = decompose_name(name)
-
-        if i >= 3
-          i2 = i - 2
-          j2 = j + 1
-          [k, k + 1].each do |k2|
-            name2 = compose_name(i2, j2, k2)
-            if !@mem.key?(name2)
-              p2 = GFLoad::Person.new(:name => name2)
-              add_person(p2)
-              name_a << name2
-            else
-              p2 = @mem[name2]
-            end
-            p.put_load(p2, 0.35)
-          end
-        end
-
-        if i >= 2
-          i2 = i - 1
-          j2 = j
-          [k, k + 1].each do |k2|
-            name2 = compose_name(i2, j2, k2)
-            if !@mem.key?(name2)
-              p2 = GFLoad::Person.new(:name => name2)
-              add_person(p2)
-              name_a << name2
-            else
-              p2 = @mem[name2]
-            end
-            p.put_load(p2, 0.15)
-          end
-        end
-      end
-    end
-
-    def build_yagura(opt = {})
-      require_relative "yagura.rb"
-      build_yagura_by_person(opt[:person] || 5)
-    end
-
     def to_s(opt_short = false)
       s = "%d persons, total_weight=%g, max_load=%g" %
         [size, total_weight, max_load_weight]
-#      h = to_h_load
-#      a = sort_name(h.keys)
-#      s2 = "[" + a.map {|name| "#{name}:#{h[name]}"}.join(", ") + "]"
-#      s2 += "load: #{s}"
+
       return s if opt_short
 
       sum = summary
@@ -434,24 +364,34 @@ EOS
   end
 
   class Generator
-    def start
+    def start(opt = {})
+      require_relative "triangle.rb"
+      require_relative "trigonal.rb"
+      require_relative "yagura.rb"
+
       filename_a = []
       summary_a = []
 
-      [[:triangle, 2, 8], [:trigonal, 3, 11]].each do |sym, level_min, level_max|
-        level_min.upto(level_max) do |level|
+      [[:triangle, (2..8).to_a],
+        [:trigonal, (3..11).to_a],
+        [:yagura, [5, 7, 9, 21]]].each do |sym, args|
+        args.each do |arg|
           gf = GFLoad::Formation.new
           case sym
           when :trigonal
-            gf.build_pyramid_trigonal(level)
+            gf.build_pyramid_trigonal(arg)
+            gf.set_trigonal_plc(opt[:plc]) if opt[:plc]
           when :triangle
-            gf.build_pyramid_triangle(level)
+            gf.build_pyramid_triangle(arg)
+          when :yagura
+            gf.build_yagura_by_person(arg)
+            gf.set_yagura_plc(opt[:plc]) if opt[:plc]
           end
-          summary = "#{sym} human pyramids (level=#{level})... #{gf}"
+          summary = "Form type=#{sym}, level/person=#{arg}... #{gf}"
           puts summary
           summary_a << summary
 
-          basename = [sym, level].join
+          basename = [sym, arg].join
 
           gf.opt[:print] = :verbose
           filename1 = "#{basename}_result.txt"

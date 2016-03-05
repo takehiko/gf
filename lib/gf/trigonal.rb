@@ -1,106 +1,96 @@
-#!/usr/bin/env ruby
-
-# trigonal.rb - Load Estimator of Trigonal Human Pyramids
-#   by takehikom
-# see also:
-#   https://gist.github.com/takehiko/a32f51e2eabba4f821d8
-#   http://d.hatena.ne.jp/takehikom/20151019/1445266799
-# usage:
-#   ruby lib/gf/trigonal.rb
-#   ruby lib/gf/trigonal.rb -p 7 -m 0
-#   ruby lib/gf/trigonal.rb -p 7 -m 1
-#   ruby lib/gf/trigonal.rb -p 7 -m 2
-#   ruby lib/gf/trigonal.rb -p 7 -m 4
-
-require_relative "root.rb"
-require "optparse"
-
 module GFLoad
-  class Trigonal
-    include GFLoad::Helper
+  class Formation
+    def build_pyramid_trigonal(lev = 4)
+      # トップダウンで三角錐型（立体型）ピラミッドを構成
+      raise if lev < 3
+      @level = lev
 
-    def initialize(param = {})
-      @level = param[:level] || 5      # 三角錐型人間ピラミッドの段数
-      @zmax = param[:zmax] || 2        # generate_random_bmで使用
-      @placement_id = param[:plc] || 2 # 体重配分の方法
-      @weight_a = param[:w]            # 体重のリスト
-      @print = param[:print]
-    end
-    attr_reader :level, :zmax, :placement_id, :gf
-    attr_accessor :weight_a
+      name_top = compose_name(lev, 1, 1)
+      p = GFLoad::Person.new(:name => name_top)
+      add_person(p)
 
-    def start(opt_noprint = false)
-      @gf = GFLoad::Formation.new
-      @gf.build_pyramid_trigonal(@level)
-
-      unless Array === @weight_a
-        init_weight_a
+      name_a = [compose_name(lev - 1, 1, 1), compose_name(lev - 1, 1, 2)]
+      name_a.each do |name|
+        p = GFLoad::Person.new(:name => name)
+        add_person(p)
+        @mem[name_top].put_load(p, 0.5)
       end
 
-      case @placement_id.to_s
-      when "0"
-        # do nothing
-      when "1"
-        place1
-      when "3"
-        place3
-      when "4"
-        place4
-      else # when "2"
-        place2
-      end
+      until name_a.empty?
+        name = name_a.shift
+        p = @mem[name]
 
-      if !opt_noprint
-        if @print == :verbose
-          puts @gf
-          puts @gf.to_s_member
-        else
-          puts self.to_s
+        i, j, k = decompose_name(name)
+
+        if i >= 3
+          i2 = i - 2
+          j2 = j + 1
+          [k, k + 1].each do |k2|
+            name2 = compose_name(i2, j2, k2)
+            if !@mem.key?(name2)
+              p2 = GFLoad::Person.new(:name => name2)
+              add_person(p2)
+              name_a << name2
+            else
+              p2 = @mem[name2]
+            end
+            p.put_load(p2, 0.35)
+          end
+        end
+
+        if i >= 2
+          i2 = i - 1
+          j2 = j
+          [k, k + 1].each do |k2|
+            name2 = compose_name(i2, j2, k2)
+            if !@mem.key?(name2)
+              p2 = GFLoad::Person.new(:name => name2)
+              add_person(p2)
+              name_a << name2
+            else
+              p2 = @mem[name2]
+            end
+            p.put_load(p2, 0.15)
+          end
         end
       end
     end
 
-    def summary
-      raise if @gf.nil?
+    def set_trigonal_plc(*args)
+      if args.length > 1
+        set_trigonal_weight(args)
+      end
+      arg = args.first
+      if String === arg && /,/ =~ arg
+        set_trigonal_weight(arg.split(/,/))
+      end
 
-      sum = Hash.new
-      sum[:person] = @gf.mem.size
-      sum[:total_weight] = @gf.total_weight
-      sum[:max_load_weight] = @gf.max_load_weight
-      p_max = @gf.member.sort_by {|p| p.load_weight_rate}.last
-      sum[:person_max_load_rate] = p_max.load_weight_rate
-      sum[:person_max_load_name] = p_max.name
-      sum[:person_max_load_weight] = p_max.weight
-      sum[:person_max_load] = p_max.load_weight
-
-      sum
-    end
-    alias :summary_h :summary
-
-    def summary_a
-      sum = summary
-      [sum[:person], sum[:total_weight], sum[:max_load_weight],
-        sum[:person_max_load_rate], sum[:person_max_load_name],
-        sum[:person_max_load_weight], sum[:person_max_load]]
-    end
-
-    def to_s
-      sum = summary
-      s_gf = @gf.to_s
-      s_self = "max_rate=%g (name=%s, weight=%g, load=%g)" %
-        [sum[:person_max_load_rate], sum[:person_max_load_name],
-        sum[:person_max_load_weight], sum[:person_max_load]]
-      [s_gf, s_self].join(", ")
+      case arg.to_s
+      when "0"
+        # do nothing
+      when "1"
+        place_trigonal_weight1 # place1
+      when "3"
+        place_trigonal_weight3 # place3
+      when "4"
+        place_trigonal_weight4 # place4
+      else # when "2"
+        place_trigonal_weight2 # place2
+      end
     end
 
-    def init_weight_a
-      @weight_a = sample(@gf.mem.size, @zmax)
+    def set_trigonal_weight(weight_a)
+      raise "fewer persons" if weight_a.size < self.size
+      mem_a = @mem.keys.sort_by {|key| key}
+      mem_a.each do |name|
+        @mem[name].weight = weight_a.pop.to_i
+      end
     end
 
-    def place1
+    def place_trigonal_weight1
       # 土台と2段目以上に分けず，負荷の高いところを体重の重い者に割り当てる
-      p_a = @gf.mem.values.sort_by {|p| p.load_weight}
-      w_a = @weight_a.sort
+      p_a = member.sort_by {|p| p.load_weight}
+      w_a = sample(size, @opt[:zmax] || 2.0).sort
 
       p_a.each_with_index do |p, i|
         w = w_a[i]
@@ -109,16 +99,15 @@ module GFLoad
       end
     end
 
-    def place2
+    def place_trigonal_weight2
       # 土台と2段目以上に分け，負荷の高いところを体重の重い者に割り当てる
-      # (gfload+.rbのデフォルト処理)
-      p_a = @gf.mem.values
+      p_a = member
       p_a1 = p_a.dup
       p_a1.delete_if {|p| p.name[0, 2] != "1."} # 土台の人(誰にも負荷をかけない)
       p_a2 = p_a - p_a1                         # 2段目以上の人(誰かに負荷をかける)
       p_a1.sort_by! {|p| p.load_weight}
       p_a2.sort_by! {|p| p.load_weight}
-      w_a = @weight_a.sort
+      w_a = sample(size, @opt[:zmax] || 2.0).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"
@@ -135,20 +124,20 @@ module GFLoad
       end
     end
 
-    def place3
+    def place_trigonal_weight3
       # 土台と上2段と残りに分け，残りは総当たり
-      # 他の方法と比べて時間がかかるが，結果はplace4と同じになる
-      p_a = @gf.mem.values
+      # 他の方法と比べて時間がかかるが，結果はplace_trigonal_weight4と同じになる
+      p_a = member
       p_a1 = p_a.dup
       p_a1.delete_if {|p| p.name[0, 2] != "1."} # 土台の人(誰にも負荷をかけない)
       p_a2 = p_a - p_a1                         # 残り
-      p_a3 = [[level, 1, 1], [level - 1, 1, 1], [level - 1, 1, 2]].map {|pos|
-        @gf.mem[compose_name(*pos)]
+      p_a3 = [[@level, 1, 1], [@level - 1, 1, 1], [@level - 1, 1, 2]].map {|pos|
+        @mem[compose_name(*pos)]
       }                                         # 上2段の人
       p_a2 -= p_a3
       p_a1.sort_by! {|p| p.load_weight}
       p_a2.sort_by! {|p| p.load_weight}
-      w_a = @weight_a.sort
+      w_a = sample(size, @opt[:zmax] || 2.0).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"
@@ -177,15 +166,15 @@ module GFLoad
 
       # 残り
       c = c_init = 10000
-      min_load = @gf.max_load_weight * 2
+      min_load = max_load_weight * 2
       min_a = (0...p_a2.length).to_a
       min_a.dup.permutation do |a|
         a.each do |num|
           p_a2[num].weight = w_a[num]
         end
 
-        if min_load > @gf.max_load_weight
-          min_load = @gf.max_load_weight
+        if min_load > max_load_weight
+          min_load = max_load_weight
           min_a = a.dup
           print "!";
         end
@@ -202,19 +191,19 @@ module GFLoad
       end
     end
 
-    def place4
+    def place_trigonal_weight4
       # 土台と上2段と残りに分ける
-      p_a = @gf.mem.values
+      p_a = member
       p_a1 = p_a.dup
       p_a1.delete_if {|p| p.name[0, 2] != "1."} # 土台の人(誰にも負荷をかけない)
       p_a2 = p_a - p_a1                         # 残り
-      p_a3 = [[level, 1, 1], [level - 1, 1, 1], [level - 1, 1, 2]].map {|pos|
-        @gf.mem[compose_name(*pos)]
+      p_a3 = [[@level, 1, 1], [@level - 1, 1, 1], [@level - 1, 1, 2]].map {|pos|
+        @mem[compose_name(*pos)]
       }                                         # 上2段の人
       p_a2 -= p_a3
       p_a1.sort_by! {|p| p.load_weight}
       p_a2.sort_by! {|p| p.load_weight}
-      w_a = @weight_a.sort
+      w_a = sample(size, @opt[:zmax] || 2.0).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"
@@ -249,23 +238,4 @@ module GFLoad
       end
     end
   end
-end
-
-if __FILE__ == $0
-  seed = 12345
-  opt = OptionParser.new
-  h = {}
-  opt.on("-p", "--pyramid=VAL",
-         "Level of human pyramid") {|v| h[:level] = v.to_i}
-  opt.on("-z", "--zmax=VAL",
-         "Threshold of weight") {|v| h[:zmax] = v.to_f}
-  opt.on("-s", "--seed=VAL",
-         "Random seed") {|v| seed = v.to_i}
-  opt.on("-m", "--placement=VAL",
-         "Placement Method") {|v| h[:plc] = v.dup}
-  opt.on("-v", "--verbose",
-         "Print verbose info") { h[:print] = :verbose }
-  opt.parse!(ARGV)
-  srand(seed)
-  GFLoad::Trigonal.new(h).start
 end

@@ -14,13 +14,15 @@ if __FILE__ == $0
          "Build wider tower (a.k.a. yagura)") {|v| h[:yagura] = v.to_i }
   opt.on("-m", "--placement=VAL",
          "Placement Method") {|v| h[:plc] = v.dup}
+  opt.on("-z", "--zmax=VAL",
+         "Threshold of weight") {|v| h[:zmax] = v.to_f}
   opt.on("-v", "--verbose",
          "Print verbose info") { h[:print] = :verbose }
   opt.on("-r", "--ruby",
          "Print Ruby code") { h[:print] = :ruby }
   opt.on("-d", "--dot",
          "Print DOT (Graphviz) code") { h[:print] = :dot }
-  opt.on("-z", "--generate",
+  opt.on("-A", "--generate",
          "Generate cases") { h[:g] = true }
   opt.on("-s", "--seed=VAL",
          "Random seed") {|v| srand(v.to_i)}
@@ -35,7 +37,7 @@ EOS
   }
   opt.parse!(ARGV)
   if h[:g]
-    GFLoad::Generator.new.start
+    GFLoad::Generator.new.start(h)
     exit
   end
   GFLoad::Formation.new(h).start
