@@ -82,6 +82,8 @@ module GFLoad
     attr_accessor :mem, :opt
 
     def start
+      method_plc = nil
+
       if @opt.key?(:triangle)
         require_relative "triangle.rb"
         build_pyramid_triangle(@opt[:triangle])
@@ -91,13 +93,8 @@ module GFLoad
       elsif @opt.key?(:yagura)
         require_relative "yagura.rb"
         build_yagura_by_person(@opt[:yagura])
-        case @opt[:plc]
-        when Array
-          set_yagura_weight(@opt[:plc])
-        when /,/
-          set_yagura_weight(@opt[:plc].split(/,/))
-        when "4"
-          place_yagura_weight4
+        if @opt[:plc]
+          method_plc = :set_yagura_plc
         end
       else
         p11 = GFLoad::Person.new(:name => "1-1"); add_person(p11)
@@ -112,6 +109,10 @@ module GFLoad
         p31 = GFLoad::Person.new(:name => "3-1"); add_person(p31)
         p31.put_load(p21, 0.5)
         p31.put_load(p22, 0.5)
+      end
+
+      if method_plc
+        send(method_plc, @opt[:plc])
       end
 
       case @opt[:print]

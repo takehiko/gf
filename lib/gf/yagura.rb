@@ -133,10 +133,24 @@ module GFLoad
       p51.put_load(p42, 0.5)
     end
 
+    def set_yagura_plc(*args)
+      if args.length > 1
+        set_yagura_weight(args)
+      end
+      arg = args.first
+      case arg
+      when /,/
+        set_yagura_weight(arg.split(/,/))
+      when "4"
+        place_yagura_weight4
+      end
+    end
+
     def set_yagura_weight(weight_a)
+      raise "fewer persons" if weight_a.size < self.size
       mem_a = @mem.keys.sort_by {|key| key}
       mem_a.each do |name|
-        @mem[name].weight = weight_a.pop
+        @mem[name].weight = weight_a.pop.to_i
       end
     end
 
