@@ -78,7 +78,7 @@ module GFLoad
         set_trigonal_weight(args)
       end
       arg = args.first
-      if /,/ =~ arg
+      if String === arg && /,/ =~ arg
         set_trigonal_weight(arg.split(/,/))
       end
 
