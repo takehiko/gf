@@ -15,6 +15,7 @@ module GFLoad
 
     def build_yagura5
       # やぐら(5人技)を構成
+      @level = 3
       p11 = GFLoad::Person.new(:name => "1.1"); add_person(p11)
       p12 = GFLoad::Person.new(:name => "1.2"); add_person(p12)
       p21 = GFLoad::Person.new(:name => "2.1"); add_person(p21)
@@ -28,6 +29,7 @@ module GFLoad
 
     def build_yagura7
       # やぐら(7人技，3段タワー)を構成
+      @level = 3
       p111 = GFLoad::Person.new(:name => "1.1.1"); add_person(p111)
       p112 = GFLoad::Person.new(:name => "1.1.2"); add_person(p112)
       p121 = GFLoad::Person.new(:name => "1.2.1"); add_person(p121)
@@ -45,6 +47,7 @@ module GFLoad
 
     def build_yagura9
       # やぐら(9人技，天空の城)を構成
+      @level = 4
       p111 = GFLoad::Person.new(:name => "1.1.1"); add_person(p111)
       p112 = GFLoad::Person.new(:name => "1.1.2"); add_person(p112)
       p121 = GFLoad::Person.new(:name => "1.2.1"); add_person(p121)
@@ -70,6 +73,7 @@ module GFLoad
 
     def build_yagura21
       # やぐら(21人技，インフィニティー)を構成
+      @level = 5
       p111 = GFLoad::Person.new(:name => "1.1.1"); add_person(p111)
       p112 = GFLoad::Person.new(:name => "1.1.2"); add_person(p112)
       p113 = GFLoad::Person.new(:name => "1.1.3"); add_person(p113)

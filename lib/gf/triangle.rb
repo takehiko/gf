@@ -1,9 +1,10 @@
 module GFLoad
   class Formation
-    def build_pyramid_triangle(level = 3)
+    def build_pyramid_triangle(lev = 3)
       # ボトムアップで三角型（俵型）ピラミッドを構成
-      1.upto(level) do |i|
-        1.upto(level - i + 1) do |j|
+      @level = lev
+      1.upto(lev) do |i|
+        1.upto(lev - i + 1) do |j|
           name = compose_name(i, j)
           p = GFLoad::Person.new(:name => name); add_person(p)
           if i > 1

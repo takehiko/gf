@@ -78,8 +78,9 @@ module GFLoad
     def initialize(h = nil)
       @mem = {} # name => Personインスタンス
       @opt = h || {}
+      @level = 0
     end
-    attr_accessor :mem, :opt
+    attr_accessor :mem, :opt, :level
 
     def start
       method_plc = nil
@@ -90,6 +91,9 @@ module GFLoad
       elsif @opt.key?(:pyramid)
         require_relative "trigonal.rb"
         build_pyramid_trigonal(@opt[:pyramid])
+        if @opt[:plc]
+          method_plc = :set_trigonal_plc
+        end
       elsif @opt.key?(:yagura)
         require_relative "yagura.rb"
         build_yagura_by_person(@opt[:yagura])
@@ -97,6 +101,7 @@ module GFLoad
           method_plc = :set_yagura_plc
         end
       else
+        @level = 3
         p11 = GFLoad::Person.new(:name => "1-1"); add_person(p11)
         p12 = GFLoad::Person.new(:name => "1-2"); add_person(p12)
         p13 = GFLoad::Person.new(:name => "1-3"); add_person(p13)
