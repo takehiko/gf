@@ -364,24 +364,34 @@ EOS
   end
 
   class Generator
-    def start
+    def start(opt = {})
+      require_relative "triangle.rb"
+      require_relative "trigonal.rb"
+      require_relative "yagura.rb"
+
       filename_a = []
       summary_a = []
 
-      [[:triangle, 2, 8], [:trigonal, 3, 11]].each do |sym, level_min, level_max|
-        level_min.upto(level_max) do |level|
+      [[:triangle, (2..8).to_a],
+        [:trigonal, (3..11).to_a],
+        [:yagura, [5, 7, 9, 21]]].each do |sym, args|
+        args.each do |arg|
           gf = GFLoad::Formation.new
           case sym
           when :trigonal
-            gf.build_pyramid_trigonal(level)
+            gf.build_pyramid_trigonal(arg)
+            gf.set_trigonal_plc(opt[:plc]) if opt[:plc]
           when :triangle
-            gf.build_pyramid_triangle(level)
+            gf.build_pyramid_triangle(arg)
+          when :yagura
+            gf.build_yagura_by_person(arg)
+            gf.set_yagura_plc(opt[:plc]) if opt[:plc]
           end
-          summary = "#{sym} human pyramids (level=#{level})... #{gf}"
+          summary = "Form type=#{sym}, level/person=#{arg}... #{gf}"
           puts summary
           summary_a << summary
 
-          basename = [sym, level].join
+          basename = [sym, arg].join
 
           gf.opt[:print] = :verbose
           filename1 = "#{basename}_result.txt"

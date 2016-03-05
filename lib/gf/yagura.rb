@@ -142,7 +142,7 @@ module GFLoad
         set_yagura_weight(args)
       end
       arg = args.first
-      case arg
+      case arg.to_s
       when /,/
         set_yagura_weight(arg.split(/,/))
       when "4"

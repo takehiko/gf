@@ -37,7 +37,7 @@ EOS
   }
   opt.parse!(ARGV)
   if h[:g]
-    GFLoad::Generator.new.start
+    GFLoad::Generator.new.start(h)
     exit
   end
   GFLoad::Formation.new(h).start
