@@ -371,6 +371,7 @@ EOS
       require_relative "triangle.rb"
       require_relative "trigonal.rb"
       require_relative "yagura.rb"
+      require_relative "excel.rb"
 
       filename_a = []
       summary_a = []
@@ -427,6 +428,11 @@ EOS
           puts command
           system command
           filename_a << filename4 if test(?f, filename4)
+
+          filename5 = "#{basename}.xlsx"
+          gf.opt[:workbook_name] = filename5
+          gf.to_excel
+          filename_a << filename5
         end
       end
 
@@ -440,7 +446,7 @@ EOS
 
       # zip
       filename_script = File.basename(__FILE__)
-      command = "zip gfload.zip " + filename_a.join(" ")
+      command = "zip gf.zip " + filename_a.join(" ")
       if File.expand_path(__FILE__) != File.expand_path(filename_script)
         command_cp = "cp #{__FILE__} ."
         puts command_cp
