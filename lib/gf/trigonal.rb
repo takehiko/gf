@@ -1,4 +1,4 @@
-module GFLoad
+module GF
   class Formation
     def build_pyramid_trigonal(lev = 4)
       # トップダウンで三角錐型（立体型）ピラミッドを構成
@@ -6,12 +6,12 @@ module GFLoad
       @level = lev
 
       name_top = compose_name(lev, 1, 1)
-      p = GFLoad::Person.new(:name => name_top)
+      p = GF::Person.new(:name => name_top)
       add_person(p)
 
       name_a = [compose_name(lev - 1, 1, 1), compose_name(lev - 1, 1, 2)]
       name_a.each do |name|
-        p = GFLoad::Person.new(:name => name)
+        p = GF::Person.new(:name => name)
         add_person(p)
         @mem[name_top].put_load(p, 0.5)
       end
@@ -28,7 +28,7 @@ module GFLoad
           [k, k + 1].each do |k2|
             name2 = compose_name(i2, j2, k2)
             if !@mem.key?(name2)
-              p2 = GFLoad::Person.new(:name => name2)
+              p2 = GF::Person.new(:name => name2)
               add_person(p2)
               name_a << name2
             else
@@ -44,7 +44,7 @@ module GFLoad
           [k, k + 1].each do |k2|
             name2 = compose_name(i2, j2, k2)
             if !@mem.key?(name2)
-              p2 = GFLoad::Person.new(:name => name2)
+              p2 = GF::Person.new(:name => name2)
               add_person(p2)
               name_a << name2
             else

@@ -3,7 +3,7 @@ require_relative "../lib/gf/root.rb"
 
 class TestYagura < Test::Unit::TestCase
   def test_create_yagura_5_persons
-    gf = GFLoad::Formation.new(:yagura => 5, :print => :none)
+    gf = GF::Formation.new(:yagura => 5, :print => :none)
     gf.start
     assert_equal(5, gf.size)
     assert_equal(5, gf.total_weight)
@@ -12,7 +12,7 @@ class TestYagura < Test::Unit::TestCase
   end
 
   def test_create_yagura_7_persons
-    gf = GFLoad::Formation.new(:yagura => 7, :print => :none)
+    gf = GF::Formation.new(:yagura => 7, :print => :none)
     gf.start
     assert_equal(7, gf.size)
     assert_equal(7, gf.total_weight)
@@ -21,7 +21,7 @@ class TestYagura < Test::Unit::TestCase
   end
 
   def test_create_yagura_9_persons
-    gf = GFLoad::Formation.new(:yagura => 9, :print => :none)
+    gf = GF::Formation.new(:yagura => 9, :print => :none)
     gf.start
     assert_equal(9, gf.size)
     assert_equal(9, gf.total_weight)
@@ -31,7 +31,7 @@ class TestYagura < Test::Unit::TestCase
   end
 
   def test_create_yagura_21_persons
-    gf = GFLoad::Formation.new(:yagura => 21, :print => :none)
+    gf = GF::Formation.new(:yagura => 21, :print => :none)
     gf.start
     assert_equal(21, gf.size)
     assert_equal(21, gf.total_weight)

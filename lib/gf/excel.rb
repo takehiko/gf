@@ -1,6 +1,6 @@
 require "rubyXL"
 
-module GFLoad
+module GF
   class Formation
     def to_excel_obj
       puts "under construction"

@@ -3,7 +3,7 @@ require_relative "../lib/gf.rb"
 
 class TestRoot < Test::Unit::TestCase
   def test_create_triangle
-    gf = GFLoad::Formation.new(:triangle => 5, :print => :none)
+    gf = GF::Formation.new(:triangle => 5, :print => :none)
     gf.start
 
     assert_equal(15, gf.size)
@@ -14,7 +14,7 @@ class TestRoot < Test::Unit::TestCase
   end
 
   def test_create_pyramid
-    gf = GFLoad::Formation.new(:pyramid => 5, :print => :none)
+    gf = GF::Formation.new(:pyramid => 5, :print => :none)
     gf.start
 
     assert_equal(22, gf.size)

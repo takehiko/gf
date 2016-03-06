@@ -13,7 +13,7 @@ require_relative "root.rb"
 require "optparse"
 
 class GFBuild
-  include GFLoad::Helper
+  include GF::Helper
 
   def initialize(param = {})
     @level = param[:level] || 5 # 三角錐型人間ピラミッドの段数
@@ -26,7 +26,7 @@ class GFBuild
   end
 
   def init_pyramid
-    @gf = GFLoad::Formation.new
+    @gf = GF::Formation.new
     @gf.build_pyramid_trigonal(@level)
   end
 

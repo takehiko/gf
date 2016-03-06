@@ -1,9 +1,7 @@
-#!/usr/bin/env ruby
-
 # root.rb : Load Calculator for Gymnastic Formation
 #   by takehikom
 
-module GFLoad
+module GF
   module Helper
     SEPARATOR = "."
     SEPARATOR2 = "_"
@@ -73,7 +71,7 @@ module GFLoad
   end
 
   class Formation
-    include GFLoad::Helper
+    include GF::Helper
 
     def initialize(h = nil)
       @mem = {} # name => Personインスタンス
@@ -102,16 +100,16 @@ module GFLoad
         end
       else
         @level = 3
-        p11 = GFLoad::Person.new(:name => "1.1"); add_person(p11)
-        p12 = GFLoad::Person.new(:name => "1.2"); add_person(p12)
-        p13 = GFLoad::Person.new(:name => "1.3"); add_person(p13)
-        p21 = GFLoad::Person.new(:name => "2.1"); add_person(p21)
+        p11 = GF::Person.new(:name => "1.1"); add_person(p11)
+        p12 = GF::Person.new(:name => "1.2"); add_person(p12)
+        p13 = GF::Person.new(:name => "1.3"); add_person(p13)
+        p21 = GF::Person.new(:name => "2.1"); add_person(p21)
         p21.put_load(p11, 0.5)
         p21.put_load(p12, 0.5)
-        p22 = GFLoad::Person.new(:name => "2.2"); add_person(p22)
+        p22 = GF::Person.new(:name => "2.2"); add_person(p22)
         p22.put_load(p12, 0.5)
         p22.put_load(p13, 0.5)
-        p31 = GFLoad::Person.new(:name => "3.1"); add_person(p31)
+        p31 = GF::Person.new(:name => "3.1"); add_person(p31)
         p31.put_load(p21, 0.5)
         p31.put_load(p22, 0.5)
       end
@@ -212,10 +210,10 @@ module GFLoad
       s = <<"EOS"
 #! ruby
 require "#{__FILE__}"
-g = GFLoad::Formation.new
+g = GF::Formation.new
 EOS
       sort_person(member).each do |person|
-        s += "g.add_person(GFLoad::Person.new(:name => \"#{person.name}\", :weight => #{person.weight}))\n"
+        s += "g.add_person(GF::Person.new(:name => \"#{person.name}\", :weight => #{person.weight}))\n"
       end
 
       sort_person(member).each do |person1|
@@ -257,7 +255,7 @@ EOS
   end
 
   class Person
-    include GFLoad::Helper
+    include GF::Helper
 
     def initialize(param = {})
       @name = param[:name] || "anonymous" # 名前
@@ -381,7 +379,7 @@ EOS
         [:trigonal, (3..11).to_a],
         [:yagura, [5, 7, 9, 21]]].each do |sym, args|
         args.each do |arg|
-          gf = GFLoad::Formation.new
+          gf = GF::Formation.new
           case sym
           when :trigonal
             gf.build_pyramid_trigonal(arg)
