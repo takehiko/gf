@@ -49,9 +49,9 @@ module GFLoad
 
           # 荷重+自重
           c11 = RubyXL::Reference.ind2ref(1, j_name)
-          c12 = RubyXL::Reference.ind2ref(p_a.size + 1, j_name)
+          c12 = RubyXL::Reference.ind2ref(p_a.size, j_name)
           c21 = RubyXL::Reference.ind2ref(1, j_total_weight)
-          c22 = RubyXL::Reference.ind2ref(p_a.size + 1, j_total_weight)
+          c22 = RubyXL::Reference.ind2ref(p_a.size, j_total_weight)
           c3 = RubyXL::Reference.ind2ref(i + 1, j - 2)
           row_a << "=IF(COUNTIF($%s:$%s,%s),INDEX($%s:$%s,MATCH(%s,$%s:$%s,0),1),0)" % [c11, c12, c3, c21, c22, c3, c11, c12]
           j += 1
