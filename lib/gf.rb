@@ -22,6 +22,10 @@ if __FILE__ == $0
          "Print Ruby code") { h[:print] = :ruby }
   opt.on("-d", "--dot",
          "Print DOT (Graphviz) code") { h[:print] = :dot }
+  opt.on("-x", "--excel=VAL",
+         "Save as Excel file") {|v| h[:workbook_name] = v.dup }
+  opt.on("-q", "--quiet",
+         "Quiet") { h[:print] = :none }
   opt.on("-A", "--generate",
          "Generate cases") { h[:g] = true }
   opt.on("-s", "--seed=VAL",

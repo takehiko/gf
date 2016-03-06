@@ -102,22 +102,27 @@ module GFLoad
         end
       else
         @level = 3
-        p11 = GFLoad::Person.new(:name => "1-1"); add_person(p11)
-        p12 = GFLoad::Person.new(:name => "1-2"); add_person(p12)
-        p13 = GFLoad::Person.new(:name => "1-3"); add_person(p13)
-        p21 = GFLoad::Person.new(:name => "2-1"); add_person(p21)
+        p11 = GFLoad::Person.new(:name => "1.1"); add_person(p11)
+        p12 = GFLoad::Person.new(:name => "1.2"); add_person(p12)
+        p13 = GFLoad::Person.new(:name => "1.3"); add_person(p13)
+        p21 = GFLoad::Person.new(:name => "2.1"); add_person(p21)
         p21.put_load(p11, 0.5)
         p21.put_load(p12, 0.5)
-        p22 = GFLoad::Person.new(:name => "2-2"); add_person(p22)
+        p22 = GFLoad::Person.new(:name => "2.2"); add_person(p22)
         p22.put_load(p12, 0.5)
         p22.put_load(p13, 0.5)
-        p31 = GFLoad::Person.new(:name => "3-1"); add_person(p31)
+        p31 = GFLoad::Person.new(:name => "3.1"); add_person(p31)
         p31.put_load(p21, 0.5)
         p31.put_load(p22, 0.5)
       end
 
       if method_plc
         send(method_plc, @opt[:plc])
+      end
+
+      if @opt[:workbook_name]
+        require_relative "excel.rb"
+        to_excel
       end
 
       case @opt[:print]
