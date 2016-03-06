@@ -1,9 +1,3 @@
-#!/usr/bin/env ruby
-
-# excel.rb : Save Load Calculation for Gymnastic Formation as an Excel File
-#   by takehikom
-
-require_relative "root.rb"
 require "rubyXL"
 
 module GFLoad
@@ -55,9 +49,9 @@ module GFLoad
 
           # 荷重+自重
           c11 = RubyXL::Reference.ind2ref(1, j_name)
-          c12 = RubyXL::Reference.ind2ref(p_a.size + 1, j_name)
+          c12 = RubyXL::Reference.ind2ref(p_a.size, j_name)
           c21 = RubyXL::Reference.ind2ref(1, j_total_weight)
-          c22 = RubyXL::Reference.ind2ref(p_a.size + 1, j_total_weight)
+          c22 = RubyXL::Reference.ind2ref(p_a.size, j_total_weight)
           c3 = RubyXL::Reference.ind2ref(i + 1, j - 2)
           row_a << "=IF(COUNTIF($%s:$%s,%s),INDEX($%s:$%s,MATCH(%s,$%s:$%s,0),1),0)" % [c11, c12, c3, c21, c22, c3, c11, c12]
           j += 1
@@ -82,8 +76,8 @@ module GFLoad
       end
 
       # ファイルを保存
-      filename_out = @opt[:workbook_name] || "gfload.xlsx"
-      puts "save as #{filename_out}..."
+      filename_out = @opt[:workbook_name] || "gf.xlsx"
+      puts "save as #{filename_out}..." if @opt[:print] != :none
       @workbook.write(filename_out)
     end
 
@@ -113,63 +107,5 @@ module GFLoad
     def fit_pos_array(a, size)
       (a + [nil] * size)[0, size]
     end
-  end
-end
-
-if __FILE__ == $0
-  case ARGV.shift
-  when /^t/i
-    level = (ARGV.shift || 4).to_i
-    gf = GFLoad::Formation.new(:triangle => level, :workbook_name => "gfload_triangle#{level}.xlsx", :sheet_name => "Triangle #{level}")
-    gf.build_pyramid_triangle(level)
-    gf.to_excel
-  when /^p/i
-    level = (ARGV.shift || 5).to_i
-    gf = GFLoad::Formation.new(:pyramid => level, :workbook_name => "gfload_trigonal#{level}.xlsx", :sheet_name => "Trigonal #{level}")
-    gf.build_pyramid_trigonal(level)
-    gf.to_excel
-  when /^e/i
-    require_relative "trigonal.rb"
-
-    level = (ARGV.shift || 5).to_i
-    est = GFLoad::Trigonal.new(:level => level, :print => false, :plc => 4)
-    est.start
-    gf = est.gf
-    gf.opt[:workbook_name] = "gfload_est#{level}.xlsx"
-    gf.opt[:sheet_name] = "Trigonal #{level}"
-    gf.to_excel
-  when /^a/i
-    require_relative "trigonal.rb"
-
-    2.upto(8) do |level|
-      gf = GFLoad::Formation.new(:triangle => level,
-                                 :workbook_name => "gfload_triangle#{level}.xlsx",
-                                 :sheet_name => "Triangle #{level}")
-      gf.build_pyramid_triangle(level)
-      gf.to_excel
-    end
-
-    4.upto(11) do |level|
-      gf = GFLoad::Formation.new(:pyramid => level,
-                                 :workbook_name => "gfload_trigonal#{level}.xlsx",
-                                 :sheet_name => "Trigonal #{level}")
-      gf.build_pyramid_trigonal(level)
-      gf.to_excel
-    end
-
-    4.upto(11) do |level|
-      est = GFLoad::Trigonal.new(:level => level, :print => false, :plc => 4)
-      est.start
-      gf = est.gf
-      gf.opt[:workbook_name] = "gfload_est#{level}.xlsx"
-      gf.opt[:sheet_name] = "Trigonal #{level}"
-      gf.to_excel
-    end
-  else
-    puts "usage:"
-    puts "  ruby #{__FILE__} trigngle [level]"
-    puts "  ruby #{__FILE__} pyramid [level]"
-    puts "  ruby #{__FILE__} est [level]"
-    puts "  ruby #{__FILE__} all [level]"
   end
 end

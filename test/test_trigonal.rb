@@ -1,5 +1,5 @@
 require "test/unit"
-require_relative "../lib/gf/trigonal.rb"
+require_relative "../lib/gf/root.rb"
 
 class TestTrigonal2 < Test::Unit::TestCase
   def test_create_pyramid_level5
