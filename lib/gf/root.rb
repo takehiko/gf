@@ -86,6 +86,9 @@ module GF
       if @opt.key?(:triangle)
         require_relative "triangle.rb"
         build_pyramid_triangle(@opt[:triangle])
+        if @opt[:plc]
+          method_plc = :set_triangle_plc
+        end
       elsif @opt.key?(:pyramid)
         require_relative "trigonal.rb"
         build_pyramid_trigonal(@opt[:pyramid])
