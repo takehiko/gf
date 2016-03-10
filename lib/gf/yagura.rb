@@ -147,6 +147,8 @@ module GF
         set_yagura_weight(arg.split(/,/))
       when "4"
         place_yagura_weight4
+      else
+        puts "option -m #{args} was ignored."
       end
     end
 
