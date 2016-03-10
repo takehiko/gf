@@ -490,7 +490,7 @@ EOS
         puts "  conventional_max_load_rate=#{max_load_rate}"
       end
 
-      3.upto(7) do |level|
+      3.upto(11) do |level|
         puts "Trigonal (level=#{level})"
         max_load_rate_sum = 0.0
         seed_a.each do |seed|
