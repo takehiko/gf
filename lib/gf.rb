@@ -28,6 +28,8 @@ if __FILE__ == $0
          "Quiet") { h[:print] = :none }
   opt.on("-A", "--generate",
          "Generate cases") { h[:g] = true }
+  opt.on("-E", "--estimate",
+         "Estimate typical cases") { h[:e] = true }
   opt.on("-s", "--seed=VAL",
          "Random seed") {|v| srand(v.to_i)}
   opt.on("-a", "--from-programmer", "Message from the programmer") {
@@ -41,7 +43,10 @@ EOS
   }
   opt.parse!(ARGV)
   if h[:g]
-    GF::Generator.new.start(h)
+    GF::Generator.start(h)
+    exit
+  elsif h[:e]
+    GF::Estimator.start
     exit
   end
   GF::Formation.new(h).start

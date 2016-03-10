@@ -66,16 +66,16 @@ module GF
       end
 
       case arg.to_s
-      when "0"
-        # do nothing
       when "1"
         place_trigonal_weight1 # place1
       when "3"
         place_trigonal_weight3 # place3
       when "4"
         place_trigonal_weight4 # place4
-      else # when "2"
+      when "2"
         place_trigonal_weight2 # place2
+      else
+        puts "option -m #{args} was ignored."
       end
     end
 

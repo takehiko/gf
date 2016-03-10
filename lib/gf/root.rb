@@ -86,6 +86,9 @@ module GF
       if @opt.key?(:triangle)
         require_relative "triangle.rb"
         build_pyramid_triangle(@opt[:triangle])
+        if @opt[:plc]
+          method_plc = :set_triangle_plc
+        end
       elsif @opt.key?(:pyramid)
         require_relative "trigonal.rb"
         build_pyramid_trigonal(@opt[:pyramid])
@@ -367,7 +370,7 @@ EOS
   end
 
   class Generator
-    def start(opt = {})
+    def self.start(opt = {})
       require_relative "triangle.rb"
       require_relative "trigonal.rb"
       require_relative "yagura.rb"
@@ -457,6 +460,73 @@ EOS
       puts command
       system command
       File.unlink(*filename_a)
+    end
+  end
+
+  class Estimator
+    def self.start
+      require_relative "triangle.rb"
+      require_relative "trigonal.rb"
+      require_relative "yagura.rb"
+
+      seed_a = (12340..12349).to_a
+
+      2.upto(5) do |level|
+        puts "Triangle (level=#{level})"
+        max_load_rate_sum = 0.0
+        seed_a.each do |seed|
+          srand(seed)
+          gf = GF::Formation.new(:triangle => level, :plc => 4, :print => :none)
+          gf.start
+          max_load_rate = gf.summary[:person_max_load_rate]
+          puts "  seed=#{seed}, max_load_rate=#{max_load_rate}"
+          max_load_rate_sum += max_load_rate
+        end
+        puts "  average_max_load_rate=#{max_load_rate_sum / seed_a.size}"
+
+        gf = GF::Formation.new(:triangle => level, :print => :none)
+        gf.start
+        max_load_rate = gf.summary[:person_max_load_rate]
+        puts "  conventional_max_load_rate=#{max_load_rate}"
+      end
+
+      3.upto(11) do |level|
+        puts "Trigonal (level=#{level})"
+        max_load_rate_sum = 0.0
+        seed_a.each do |seed|
+          srand(seed)
+          gf = GF::Formation.new(:pyramid => level, :plc => 4, :print => :none)
+          gf.start
+          max_load_rate = gf.summary[:person_max_load_rate]
+          puts "  seed=#{seed}, max_load_rate=#{max_load_rate}"
+          max_load_rate_sum += max_load_rate
+        end
+        puts "  average_max_load_rate=#{max_load_rate_sum / seed_a.size}"
+
+        gf = GF::Formation.new(:pyramid => level, :print => :none)
+        gf.start
+        max_load_rate = gf.summary[:person_max_load_rate]
+        puts "  conventional_max_load_rate=#{max_load_rate}"
+      end
+
+      [5, 7, 9, 21].each do |person|
+        puts "Yagura (person=#{person})"
+        max_load_rate_sum = 0.0
+        seed_a.each do |seed|
+          srand(seed)
+          gf = GF::Formation.new(:yagura => person, :plc => 4, :print => :none)
+          gf.start
+          max_load_rate = gf.summary[:person_max_load_rate]
+          puts "  seed=#{seed}, max_load_rate=#{max_load_rate}"
+          max_load_rate_sum += max_load_rate
+        end
+        puts "  average_max_load_rate=#{max_load_rate_sum / seed_a.size}"
+
+        gf = GF::Formation.new(:yagura => person, :print => :none)
+        gf.start
+        max_load_rate = gf.summary[:person_max_load_rate]
+        puts "  conventional_max_load_rate=#{max_load_rate}"
+      end
     end
   end
 end
