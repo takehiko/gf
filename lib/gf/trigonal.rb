@@ -34,7 +34,7 @@ module GF
             else
               p2 = @mem[name2]
             end
-            p.put_load(p2, 0.35)
+            p.put_load(p2, @default_foot_rate)
           end
         end
 
@@ -50,7 +50,7 @@ module GF
             else
               p2 = @mem[name2]
             end
-            p.put_load(p2, 0.15)
+            p.put_load(p2, @default_hand_rate)
           end
         end
       end
