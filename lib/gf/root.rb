@@ -42,6 +42,8 @@ module GF
       sd = Math.sqrt((7.40 ** 2 + 8.31 ** 2) / 2)
       # 小学校11男子のみであれば，以下のコメントを外す
       # avg = 37.82; sd = 7.40
+      # 中学校14男子のみであれば，以下のコメントを外す
+      # avg = 53.23; sd = 8.23
       generate_random_bm(avg, sd, size, zmax)
     end
 
