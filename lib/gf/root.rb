@@ -82,6 +82,7 @@ module GF
 
     def start
       method_plc = nil
+      setup_hand_foot
 
       if @opt.key?(:triangle)
         require_relative "triangle.rb"
@@ -184,6 +185,25 @@ module GF
       # person_name => load_weight
       Hash[*member.map {|person| [person.name, person.load_weight]}.flatten]
     end
+
+    def setup_hand_foot
+      @default_hand_rate = 0.15
+      @default_foot_rate = 0.35
+
+      case @opt[:hand_foot]
+      when /:/
+        h, f = $`.to_f, $'.to_f
+        s = h + f
+        @default_hand_rate = h / s / 2.0
+        @default_foot_rate = f / s / 2.0
+      when /^\d/
+        h = @opt[:hand_foot].to_f
+        @default_hand_rate = h / 2.0
+        @default_foot_rate = 0.5 - @default_hand_rate
+      end
+      [@default_hand_rate, @default_foot_rate]
+    end
+    attr_reader :default_hand_rate, :default_foot_rate
 
     def summary
       raise if size < 1

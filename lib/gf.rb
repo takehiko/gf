@@ -30,6 +30,8 @@ if __FILE__ == $0
          "Generate cases") { h[:g] = true }
   opt.on("-E", "--estimate",
          "Estimate typical cases") { h[:e] = true }
+  opt.on("-h", "--handfoot=VAL",
+         "Hand and foot weighting") {|v| h[:hand_foot] = v.dup }
   opt.on("-s", "--seed=VAL",
          "Random seed") {|v| srand(v.to_i)}
   opt.on("-a", "--from-programmer", "Message from the programmer") {
