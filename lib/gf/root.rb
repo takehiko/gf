@@ -310,7 +310,7 @@ EOS
 
     def load_weight
       # 負荷重量を返す．自重は算入しない
-      @sup.keys.map {|p| p.total_weight * p.sub[self]}.inject(:+) || 0.0
+      @sup.keys.map {|p| p.total_weight * (p.sub[self] || 0.0)}.inject(:+) || 0.0
     end
 
     def total_weight

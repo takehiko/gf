@@ -10,6 +10,7 @@
 #   ruby lib/gf/pyramid_build.rb -p 11
 
 require_relative "root.rb"
+require_relative "trigonal.rb"
 require "optparse"
 
 class GFBuild
