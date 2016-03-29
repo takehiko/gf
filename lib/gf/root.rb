@@ -405,13 +405,14 @@ EOS
         [:trigonal, (3..11).to_a],
         [:yagura, [5, 7, 9, 21]]].each do |sym, args|
         args.each do |arg|
-          gf = GF::Formation.new
+          gf = GF::Formation.new(opt)
           case sym
           when :trigonal
             gf.build_pyramid_trigonal(arg)
             gf.set_trigonal_plc(opt[:plc]) if opt[:plc]
           when :triangle
             gf.build_pyramid_triangle(arg)
+            gf.set_triangle_plc(opt[:plc]) if opt[:plc]
           when :yagura
             gf.build_yagura_by_person(arg)
             gf.set_yagura_plc(opt[:plc]) if opt[:plc]
