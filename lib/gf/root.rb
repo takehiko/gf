@@ -78,13 +78,13 @@ module GF
     def initialize(h = nil)
       @mem = {} # name => Personインスタンス
       @opt = h || {}
+      setup_hand_foot
       @level = 0
     end
     attr_accessor :mem, :opt, :level
 
     def start
       method_plc = nil
-      setup_hand_foot
 
       if @opt.key?(:triangle)
         require_relative "triangle.rb"
