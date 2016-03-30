@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# . excel/generator.sh
+# . util/generator.sh
 
 for n in 2 3 4 5 6 7 8
 do
