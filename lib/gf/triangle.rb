@@ -5,11 +5,11 @@ module GF
       @level = lev
       1.upto(lev) do |i|
         1.upto(lev - i + 1) do |j|
-          name = compose_name(i, j)
+          name = compose_name(lv(i), j)
           p = GF::Person.new(:name => name); add_person(p)
           if i > 1
             [j, j + 1].each do |j2|
-              name2 = compose_name(i - 1, j2)
+              name2 = compose_name(lv(i - 1), j2)
               p.put_load(@mem[name2], 0.5)
             end
           end
@@ -48,12 +48,13 @@ module GF
       p_a = member
       p_a1 = p_a.dup
       if @level >= 3
-        p_a1.delete_if {|p| p.name[0, 2] != "1."} # 土台の人(誰にも負荷をかけない)
+        p_a1.delete_if {|p| p.name.index("#{lv(1)}.") != 0} # 土台の人(誰にも負荷をかけない)
       else
         p_a1 = []
       end
       p_a2 = p_a - p_a1                         # 残り
       p_a3 = [[@level, 1], [@level - 1, 1], [@level - 1, 2]].map {|pos|
+        pos[0] = lv(pos[0])
         @mem[compose_name(*pos)]
       }                                         # 上2段の人
       p_a2 -= p_a3
