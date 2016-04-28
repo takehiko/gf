@@ -13,9 +13,11 @@ if __FILE__ == $0
   opt.on("-y", "--yagura=VAL",
          "Build wider tower (a.k.a. yagura)") {|v| h[:yagura] = v.to_i }
   opt.on("-m", "--placement=VAL",
-         "Placement Method") {|v| h[:plc] = v.dup}
+         "Placement Method") {|v| h[:plc] = v.dup }
   opt.on("-z", "--zmax=VAL",
-         "Threshold of weight") {|v| h[:zmax] = v.to_f}
+         "Threshold of weight") {|v| h[:zmax] = v.to_f }
+  opt.on("-c", "--descend",
+         "Top-down numbering") {|v| h[:descend] = true }
   opt.on("-v", "--verbose",
          "Print verbose info") { h[:print] = :verbose }
   opt.on("-r", "--ruby",

@@ -106,16 +106,16 @@ module GF
         end
       else
         @level = 3
-        p11 = GF::Person.new(:name => "1.1"); add_person(p11)
-        p12 = GF::Person.new(:name => "1.2"); add_person(p12)
-        p13 = GF::Person.new(:name => "1.3"); add_person(p13)
-        p21 = GF::Person.new(:name => "2.1"); add_person(p21)
+        p11 = GF::Person.new(:name => compose_name(lv(1), 1)); add_person(p11)
+        p12 = GF::Person.new(:name => compose_name(lv(1), 2)); add_person(p12)
+        p13 = GF::Person.new(:name => compose_name(lv(1), 3)); add_person(p13)
+        p21 = GF::Person.new(:name => compose_name(lv(2), 1)); add_person(p21)
         p21.put_load(p11, 0.5)
         p21.put_load(p12, 0.5)
-        p22 = GF::Person.new(:name => "2.2"); add_person(p22)
+        p22 = GF::Person.new(:name => compose_name(lv(2), 2)); add_person(p22)
         p22.put_load(p12, 0.5)
         p22.put_load(p13, 0.5)
-        p31 = GF::Person.new(:name => "3.1"); add_person(p31)
+        p31 = GF::Person.new(:name => compose_name(lv(3), 1)); add_person(p31)
         p31.put_load(p21, 0.5)
         p31.put_load(p22, 0.5)
       end
@@ -206,6 +206,10 @@ module GF
       [@default_hand_rate, @default_foot_rate]
     end
     attr_reader :default_hand_rate, :default_foot_rate
+
+    def lv(n)
+      @opt[:descend] ? (@level - n + 1) : n
+    end
 
     def summary
       raise if size < 1
