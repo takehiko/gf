@@ -23,4 +23,16 @@ class TestRoot < Test::Unit::TestCase
     assert_equal(%w(1.2.2 1.2.3), gf.to_h_load.select {|key, value|
                    (value - gf.max_load_weight).abs < 0.001}.keys)
   end
+
+  def test_descend
+    gf1 = GF::Formation.new(:triangle => 5, :descend => true, :print => :none)
+    gf1.start
+    assert_equal(%w(5.3), gf1.to_h_load.select {|key, value|
+                   (value - gf1.max_load_weight).abs < 0.001}.keys)
+
+    gf2 = GF::Formation.new(:pyramid => 5, :descend => true, :print => :none)
+    gf2.start
+    assert_equal(%w(5.2.2 5.2.3), gf2.to_h_load.select {|key, value|
+                   (value - gf2.max_load_weight).abs < 0.001}.keys)
+  end
 end
