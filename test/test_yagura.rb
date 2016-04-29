@@ -39,4 +39,12 @@ class TestYagura < Test::Unit::TestCase
     w = gf.max_load_weight
     assert_equal([21, 21, w, w, "1.2.2", 1, w], gf.summary_a)
   end
+
+  def test_create_yagura_21_persons_descend
+    gf = GF::Formation.new(:yagura => 21, :print => :none, :descend => true)
+    gf.start
+    assert_in_delta(0.9908, gf.max_load_weight)
+    w = gf.max_load_weight
+    assert_equal([21, 21, w, w, "5.2.2", 1, w], gf.summary_a)
+  end
 end
