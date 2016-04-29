@@ -5,11 +5,11 @@ module GF
       raise if lev < 3
       @level = lev
 
-      name_top = compose_name(lev, 1, 1)
+      name_top = compose_name(lv(lev), 1, 1)
       p = GF::Person.new(:name => name_top)
       add_person(p)
 
-      name_a = [compose_name(lev - 1, 1, 1), compose_name(lev - 1, 1, 2)]
+      name_a = [compose_name(lv(lev - 1), 1, 1), compose_name(lv(lev - 1), 1, 2)]
       name_a.each do |name|
         p = GF::Person.new(:name => name)
         add_person(p)
@@ -22,8 +22,8 @@ module GF
 
         i, j, k = decompose_name(name)
 
-        if i >= 3
-          i2 = i - 2
+        if lv(i) >= 3
+          i2 = i - 2 * (@opt[:descend] ? -1 : 1)
           j2 = j + 1
           [k, k + 1].each do |k2|
             name2 = compose_name(i2, j2, k2)
@@ -38,8 +38,8 @@ module GF
           end
         end
 
-        if i >= 2
-          i2 = i - 1
+        if lv(i) >= 2
+          i2 = i - 1 * (@opt[:descend] ? -1 : 1)
           j2 = j
           [k, k + 1].each do |k2|
             name2 = compose_name(i2, j2, k2)
@@ -103,8 +103,8 @@ module GF
       # 土台と2段目以上に分け，負荷の高いところを体重の重い者に割り当てる
       p_a = member
       p_a1 = p_a.dup
-      p_a1.delete_if {|p| p.name[0, 2] != "1."} # 土台の人(誰にも負荷をかけない)
-      p_a2 = p_a - p_a1                         # 2段目以上の人(誰かに負荷をかける)
+      p_a1.delete_if {|p| p.name.index("#{lv(1)}.") != 0} # 土台の人(誰にも負荷をかけない)
+      p_a2 = p_a - p_a1 # 2段目以上の人(誰かに負荷をかける)
       p_a1.sort_by! {|p| p.load_weight}
       p_a2.sort_by! {|p| p.load_weight}
       w_a = sample(size, @opt[:zmax] || 2.0).sort
@@ -129,9 +129,10 @@ module GF
       # 他の方法と比べて時間がかかるが，結果はplace_trigonal_weight4と同じになる
       p_a = member
       p_a1 = p_a.dup
-      p_a1.delete_if {|p| p.name[0, 2] != "1."} # 土台の人(誰にも負荷をかけない)
+      p_a1.delete_if {|p| p.name.index("#{lv(1)}.") != 0} # 土台の人(誰にも負荷をかけない)
       p_a2 = p_a - p_a1                         # 残り
       p_a3 = [[@level, 1, 1], [@level - 1, 1, 1], [@level - 1, 1, 2]].map {|pos|
+        pos[0] = lv(pos[0])
         @mem[compose_name(*pos)]
       }                                         # 上2段の人
       p_a2 -= p_a3
@@ -195,9 +196,10 @@ module GF
       # 土台と上2段と残りに分ける
       p_a = member
       p_a1 = p_a.dup
-      p_a1.delete_if {|p| p.name[0, 2] != "1."} # 土台の人(誰にも負荷をかけない)
+      p_a1.delete_if {|p| p.name.index("#{lv(1)}.") != 0} # 土台の人(誰にも負荷をかけない)
       p_a2 = p_a - p_a1                         # 残り
       p_a3 = [[@level, 1, 1], [@level - 1, 1, 1], [@level - 1, 1, 2]].map {|pos|
+        pos[0] = lv(pos[0])
         @mem[compose_name(*pos)]
       }                                         # 上2段の人
       p_a2 -= p_a3
