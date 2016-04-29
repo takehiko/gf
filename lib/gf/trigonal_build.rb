@@ -18,6 +18,7 @@ class GFBuild
 
   def initialize(param = {})
     @level = param[:level] || 5 # 三角錐型人間ピラミッドの段数
+    @descend = param[:descend]
   end
 
   def start(opt_noprint = false)
@@ -58,26 +59,29 @@ class GFBuild
 
   def print_precedure
     puts "#{@level}段の三角錐タイプのピラミッドをつくるには、#{@gf.size}人が協力して行います。"
+    if @descend
+      puts "（最上段を「1段目」、最下段を「#{@level}段目」と表記します。）"
+    end
 
     @key_a.each do |key|
       a = decompose_name(key)
       if a.first == @level && a.last == 1
-        puts "#{@level}段目の人が、#{@level - 1}段目の2人の背に足を乗せて立ちます。"
+        puts "#{lv(@level)}段目の人が、#{lv(@level - 1)}段目の2人の背に足を乗せて立ちます。"
         next
       end
       if a.first == 1 && a.last == 1
         print "はじめに、"
       end
-      puts "#{a.first}段目で前から#{a.last}列目の#{@num[key]}人が並びます。"
+      puts "#{lv(a.first)}段目で前から#{a.last}列目の#{@num[key]}人が並びます。"
       if a.first == 1
         puts "　　四つんばいで地面につきます。"
       else
         print "　　中腰の姿勢で、"
         if a.first == 2
-          puts "手は、1段目の#{a.last}列目の人の背中に乗せ、足は地面です。"
+          puts "手は、#{lv(1)}段目の#{a.last}列目の人の背中に乗せ、足は地面です。"
         else
-          print "手は、#{a.first - 1}段目で前から#{a.last}列目の人の背中に乗せ、"
-          puts "足は、#{a.first - 2}段目で前から#{a.last + 1}列目の人の背中（肩）の上です。"
+          print "手は、#{lv(a.first - 1)}段目で前から#{a.last}列目の人の背中に乗せ、"
+          puts "足は、#{lv(a.first - 2)}段目で前から#{a.last + 1}列目の人の背中（肩）の上です。"
         end
       end
       if key == @key_hardest
@@ -92,6 +96,10 @@ class GFBuild
     # rowname("1.2.3") == "1.2"
     compose_name(*decompose_name(name)[0..-2])
   end
+
+  def lv(n)
+    @descend ? (@level - n + 1) : n
+  end
 end
 
 if __FILE__ == $0
@@ -99,6 +107,8 @@ if __FILE__ == $0
   h = {}
   opt.on("-p", "--pyramid=VAL",
          "Level of human pyramid") {|v| h[:level] = v.to_i}
+  opt.on("-c", "--descend",
+         "Top-down numbering") {|v| h[:descend] = true }
   opt.parse!(ARGV)
   GFBuild.new(h).start
 end
