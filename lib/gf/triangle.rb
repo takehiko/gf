@@ -45,27 +45,14 @@ module GF
 
     def place_triangle_weight4
       # 土台と上2段と残りに分ける
-      p_a = member
-      p_a1 = p_a.dup
-      if @level >= 3
-        p_a1.delete_if {|p| p.name.index("#{lv(1)}.") != 0} # 土台の人(誰にも負荷をかけない)
-      else
-        p_a1 = []
-      end
-      p_a2 = p_a - p_a1                         # 残り
-      p_a3 = [[@level, 1], [@level - 1, 1], [@level - 1, 2]].map {|pos|
-        pos[0] = lv(pos[0])
-        @mem[compose_name(*pos)]
-      }                                         # 上2段の人
-      p_a2 -= p_a3
-      p_a1.sort_by! {|p| p.load_weight}
-      p_a2.sort_by! {|p| p.load_weight}
+      h = partition_member
+      p_a1, p_a2, p_a3 = h[:foundation], h[:interlevel], h[:top2level]
       w_a = sample(size, @opt[:zmax] || 2.0).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"
         puts "p_a2: #{p_a2.map{|p| p.name}.inspect}"
-        puts "p_a3: #{p_a2.map{|p| p.name}.inspect}"
+        puts "p_a3: #{p_a3.map{|p| p.name}.inspect}"
         puts "w_a: #{w_a.inspect}"
       end
 

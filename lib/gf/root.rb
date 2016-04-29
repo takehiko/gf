@@ -218,6 +218,37 @@ module GF
       compose_name(*a)
     end
 
+    def partition_member
+      # 土台と上2段と残りに分ける
+      h = Hash.new
+      p_a = member
+
+      # 土台(誰にも負荷をかけない)
+      p_a1 = p_a.find_all {|p| p.name.index("#{lv(1)}.") == 0}
+
+      # 上2段
+      p_a3 = p_a.find_all {|p| p.name.index("#{lv(@level)}.") == 0} +
+        p_a.find_all {|p| p.name.index("#{lv(@level - 1)}.") == 0}
+
+      # 残り
+      p_a2 = p_a - p_a1 - p_a3
+
+      p_a1.sort_by! {|p| p.load_weight}
+      p_a2.sort_by! {|p| p.load_weight}
+
+      h[:foundation] = p_a1
+      h[:interlevel] = p_a2
+      h[:top2level] = p_a3
+
+      if $DEBUG
+        puts "foundation: #{p_a1.map{|p| p.name}.inspect}"
+        puts "interlevel: #{p_a2.map{|p| p.name}.inspect}"
+        puts "top2level: #{p_a3.map{|p| p.name}.inspect}"
+      end
+
+      h
+    end
+
     def summary
       raise if size < 1
 
