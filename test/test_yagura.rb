@@ -17,7 +17,7 @@ class TestYagura < Test::Unit::TestCase
     assert_equal(7, gf.size)
     assert_equal(7, gf.total_weight)
     assert_in_delta(0.5, gf.max_load_weight)
-    assert_equal([7, 7, 0.5, 0.5, "2.1", 1, 0.5], gf.summary_a)
+    assert_equal([7, 7, 0.5, 0.5, "2.1.1", 1, 0.5], gf.summary_a)
   end
 
   def test_create_yagura_9_persons
