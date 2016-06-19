@@ -79,20 +79,6 @@ module GF
       generate_random_bm(avg, sd, size, zmax)
     end
 
-    def sample_original(size, zmax)
-      # 分布は，政府統計の総合窓口
-      # http://www.e-stat.go.jp/SG1/estat/eStatTopPortal.do
-      # の体力・運動能力調査 > 平成２６年度 > 学校段階別体格測定の結果より，
-      # 小学校11男子と中学校12男子の体重の平均値・標準偏差をもとにした．
-      avg = (37.82 + 43.86) / 2
-      sd = Math.sqrt((7.40 ** 2 + 8.31 ** 2) / 2)
-      # 小学校11男子のみであれば，以下のコメントを外す
-      # avg = 37.82; sd = 7.40
-      # 中学校14男子のみであれば，以下のコメントを外す
-      # avg = 53.23; sd = 8.23
-      generate_random_bm(avg, sd, size, zmax)
-    end
-
     def generate_random_bm(avg, sd, size, zmax = 2)
       # ボックス=ミュラー法を用いて，平均avg, 分散sd**2の正規分布から
       # size個の乱数を生成しリストにして返す
