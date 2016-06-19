@@ -104,6 +104,12 @@ module GF
         if @opt[:plc]
           method_plc = :set_yagura_plc
         end
+      elsif @opt.key?(:triangle2)
+        require_relative "triangle2.rb"
+        build_pyramid_triangle2(@opt[:triangle2])
+        if @opt[:plc]
+          method_plc = :set_triangle2_plc
+        end
       else
         @level = 3
         p11 = GF::Person.new(:name => lv_s("1.1")); add_person(p11)
