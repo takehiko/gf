@@ -26,16 +26,18 @@ module GF
 
     def set_triangle2_plc(*args)
       if args.length > 1
-        set_triangle_weight(args)
+        set_triangle2_weight(args)
       end
       arg = args.first
       if String === arg && /,/ =~ arg
-        set_triangle_weight(arg.split(/,/))
+        set_triangle2_weight(arg.split(/,/))
       end
 
       case arg.to_s
+      when "1"
+        place_triangle2_weight1
       when "4"
-        place_triangle2_weight4 # place4
+        place_triangle2_weight4
       else
         puts "option -m #{args} was ignored."
       end
@@ -43,16 +45,27 @@ module GF
 
     def set_triangle2_weight(weight_a)
       raise "fewer persons" if weight_a.size < self.size
-      mem_a = @mem.keys.sort_by {|key| key}
+      p_a = @mem.values.sort_by {|p| p.load_weight}.reverse
+      p_a.each do |p|
+        p.weight = weight_a.pop
+      end
+=begin
+      mem_a = @mem.keys.sort_by {|key| @mem[key].load_weight}
       mem_a.each do |name|
         @mem[name].weight = weight_a.pop.to_i
       end
+=end
     end
 
+    def place_triangle2_weight1
+      # 土台と2段目以上に分けず，負荷の高いところを体重の重い者に割り当てる
+      set_triangle2_weight(sample(size, @opt[:zmax] || 2.0).sort)
+    end
 
     def place_triangle2_weight4
       # 土台と上2段と残りに分ける
-      h = partition_member
+      # ただし，@levelが4以上のときは土台は下2段
+      h = partition_member(@level > 3 ? 2 : 1)
       p_a1, p_a2, p_a3 = h[:foundation], h[:interlevel], h[:top2level]
       w_a = sample(size, @opt[:zmax] || 2.0).sort
 

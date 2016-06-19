@@ -224,13 +224,15 @@ module GF
       compose_name(*a)
     end
 
-    def partition_member
+    def partition_member(base_level = 1)
       # 土台と上2段と残りに分ける
       h = Hash.new
       p_a = member
 
       # 土台(誰にも負荷をかけない)
-      p_a1 = p_a.find_all {|p| p.name.index("#{lv(1)}.") == 0}
+      regexp = /^(#{(1..base_level).to_a.join('|')})\./
+      p_a1 = p_a.find_all {|p| regexp =~ p.name}
+      # p_a1 = p_a.find_all {|p| p.name.index("#{lv(1)}.") == 0}
 
       # 上2段
       p_a3 = p_a.find_all {|p| p.name.index("#{lv(@level)}.") == 0} +
