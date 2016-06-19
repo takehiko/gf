@@ -47,7 +47,7 @@ module GF
       # 土台と上2段と残りに分ける
       h = partition_member
       p_a1, p_a2, p_a3 = h[:foundation], h[:interlevel], h[:top2level]
-      w_a = sample(size, @opt[:zmax] || 2.0).sort
+      w_a = sample(size, @opt[:dist]).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"

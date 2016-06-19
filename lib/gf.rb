@@ -17,7 +17,7 @@ if __FILE__ == $0
   opt.on("-m", "--placement=VAL",
          "Placement Method") {|v| h[:plc] = v.dup }
   opt.on("-z", "--zmax=VAL",
-         "Threshold of weight") {|v| h[:zmax] = v.to_f }
+         "Weight Distribution") {|v| h[:dist] = v }
   opt.on("-c", "--descend",
          "Top-down numbering") {|v| h[:descend] = true }
   opt.on("-v", "--verbose",

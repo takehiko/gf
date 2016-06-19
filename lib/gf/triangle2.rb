@@ -53,7 +53,7 @@ module GF
 
     def place_triangle2_weight1
       # 土台と2段目以上に分けず，負荷の高いところを体重の重い者に割り当てる
-      set_triangle2_weight(sample(size, @opt[:zmax] || 2.0).sort)
+      set_triangle2_weight(sample(size, @opt[:dist]).sort)
     end
 
     def place_triangle2_weight4
@@ -61,7 +61,7 @@ module GF
       # ただし，@levelが4以上のときは土台は下2段
       h = partition_member(@level > 3 ? 2 : 1)
       p_a1, p_a2, p_a3 = h[:foundation], h[:interlevel], h[:top2level]
-      w_a = sample(size, @opt[:zmax] || 2.0).sort
+      w_a = sample(size, @opt[:dist]).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"

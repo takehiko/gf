@@ -1,6 +1,8 @@
 # root.rb : Load Calculator for Gymnastic Formation
 #   by takehikom
 
+$default_weight = 1
+
 module GF
   module Helper
     SEPARATOR = "."
@@ -33,7 +35,51 @@ module GF
       s.split(SEPARATOR).join(SEPARATOR2)
     end
 
-    def sample(size, zmax)
+    def sample(size, param = nil)
+      avg = 1
+      sd = 0
+      zmax = 0
+
+      # いくつかの定数は，政府統計の総合窓口
+      # http://www.e-stat.go.jp/SG1/estat/eStatTopPortal.do
+      # の体力・運動能力調査 > 平成２６年度 > 学校段階別体格測定の結果より，
+      # 小学校11男子・中学校12男子・中学校14男子の体重の平均値および
+      # 標準偏差をもとにしている．
+
+      case param
+      when Numeric
+        avg = (37.82 + 43.86) / 2
+        sd = Math.sqrt((7.40 ** 2 + 8.31 ** 2) / 2)
+        zmax = param
+      when Hash
+        avg = (param[:avg] || avg).to_f
+        sd = (param[:sd] || sd).to_f
+        zmax = (param[:zmax] || zmax).to_f
+      when String
+        case param
+        when /^(s6|g6|age11)/i
+          avg = 37.82
+          sd = 7.40
+          zmax = (/average|avg/ =~ param) ? 0 : 2
+        when /^(c3|g9|age14)/i
+          avg = 53.23
+          sd = 8.23
+          zmax = (/average|avg/ =~ param) ? 0 : 2
+        when /,.*,/
+          avg, sd, zmax = param.split(/,/)[0, 3].map {|s| s.to_f}
+        when /,/
+          avg, sd = param.split(/,/)[0, 2].map {|s| s.to_f}
+          zmax = -1
+        else
+          zmax = param.to_f
+        end
+      end
+
+      # puts "<DEBUG: avg=#{avg}, sd=#{sd}, size=#{size}, zmax=#{zmax}>"
+      generate_random_bm(avg, sd, size, zmax)
+    end
+
+    def sample_original(size, zmax)
       # 分布は，政府統計の総合窓口
       # http://www.e-stat.go.jp/SG1/estat/eStatTopPortal.do
       # の体力・運動能力調査 > 平成２６年度 > 学校段階別体格測定の結果より，
@@ -80,6 +126,7 @@ module GF
       @opt = h || {}
       setup_hand_foot
       @level = 0
+      $default_weight = sample(1, @opt[:dist] || "1,0,0").first
     end
     attr_accessor :mem, :opt, :level
 
@@ -152,14 +199,16 @@ module GF
 
     def to_s(opt_short = false)
       s = "%d persons, total_weight=%g, max_load=%g" %
-        [size, total_weight, max_load_weight]
+        [size, total_weight, max_load_weight].map {|num|
+        (Float === num && num == num.to_i) ? num.to_i : num}
 
       return s if opt_short
 
       sum = summary
       s2 = "max_rate=%g (name=%s, weight=%g, load=%g)" %
         [sum[:person_max_load_rate], sum[:person_max_load_name],
-        sum[:person_max_load_weight], sum[:person_max_load]]
+        sum[:person_max_load_weight], sum[:person_max_load]].map {|num|
+        (Float === num && num == num.to_i) ? num.to_i : num}
 
       [s, s2].join(", ")
     end
@@ -334,7 +383,7 @@ EOS
 
     def initialize(param = {})
       @name = param[:name] || "anonymous" # 名前
-      @weight = param[:weight] || 1.0 # 自重
+      @weight = param[:weight] || $default_weight # 自重
       @sup = {}            # Personインスタンス（上にいる人）から
                            # 真偽値へのハッシュ
       @sub = Hash.new(0.0) # Personインスタンス（下にいる人）から

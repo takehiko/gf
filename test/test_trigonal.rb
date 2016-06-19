@@ -11,9 +11,9 @@ class TestTrigonal < Test::Unit::TestCase
   def test_create_pyramids_level7
     gf0 = GF::Formation.new(:pyramid => 7, :print => :none)
     gf0.start
-    gf4 = GF::Formation.new(:pyramid => 7, :plc => 4, :print => :none)
+    gf4 = GF::Formation.new(:pyramid => 7, :plc => 4, :dist => 2, :print => :none)
     gf4.start
-    summary_a = [55, 55.0, 2.406125, 2.406125, "1.3.3", 1.0, 2.406125]
+    summary_a = [55, 55, 2.406125, 2.406125, "1.3.3", 1, 2.406125]
     assert_equal(summary_a, gf0.summary_a)
     assert_not_equal(summary_a, gf4.summary_a)
     assert_equal(gf0.summary_a[0], gf4.summary_a[0])
@@ -38,7 +38,7 @@ class TestTrigonal < Test::Unit::TestCase
     end
 
     4.upto(11) do |level|
-      gf = GF::Formation.new(:pyramid => level, :plc => 4, :print => :none)
+      gf = GF::Formation.new(:pyramid => level, :plc => 4, :dist => 2, :print => :none)
       gf.start
       assert_equal(person_a[level], gf.summary[:person])
       assert(max_load_a[level] > gf.summary[:person_max_load_rate])

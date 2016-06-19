@@ -90,7 +90,7 @@ module GF
     def place_trigonal_weight1
       # 土台と2段目以上に分けず，負荷の高いところを体重の重い者に割り当てる
       p_a = member.sort_by {|p| p.load_weight}
-      w_a = sample(size, @opt[:zmax] || 2.0).sort
+      w_a = sample(size, @opt[:dist]).sort
 
       p_a.each_with_index do |p, i|
         w = w_a[i]
@@ -103,7 +103,7 @@ module GF
       # 土台と2段目以上に分け，負荷の高いところを体重の重い者に割り当てる
       h = partition_member
       p_a1, p_a2 = h[:foundation], h[:top2level] + h[:interlevel]
-      w_a = sample(size, @opt[:zmax] || 2.0).sort
+      w_a = sample(size, @opt[:dist]).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"
@@ -125,7 +125,7 @@ module GF
       # 他の方法と比べて時間がかかるが，結果はplace_trigonal_weight4と同じになる
       h = partition_member
       p_a1, p_a2, p_a3 = h[:foundation], h[:interlevel], h[:top2level]
-      w_a = sample(size, @opt[:zmax] || 2.0).sort
+      w_a = sample(size, @opt[:dist]).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"
@@ -182,7 +182,7 @@ module GF
     def place_trigonal_weight4
       h = partition_member
       p_a1, p_a2, p_a3 = h[:foundation], h[:interlevel], h[:top2level]
-      w_a = sample(size, @opt[:zmax] || 2.0).sort
+      w_a = sample(size, @opt[:dist]).sort
 
       if $DEBUG
         puts "p_a1: #{p_a1.map{|p| p.name}.inspect}"
