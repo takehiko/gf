@@ -1,7 +1,7 @@
 require "test/unit"
 require_relative "../lib/gf/root.rb"
 
-class TestTrigonal2 < Test::Unit::TestCase
+class TestTrigonal < Test::Unit::TestCase
   def test_create_pyramid_level5
     gf = GF::Formation.new(:pyramid => 5, :print => :none)
     gf.start

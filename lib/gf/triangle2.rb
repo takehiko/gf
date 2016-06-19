@@ -49,12 +49,6 @@ module GF
       p_a.each do |p|
         p.weight = weight_a.pop
       end
-=begin
-      mem_a = @mem.keys.sort_by {|key| @mem[key].load_weight}
-      mem_a.each do |name|
-        @mem[name].weight = weight_a.pop.to_i
-      end
-=end
     end
 
     def place_triangle2_weight1
