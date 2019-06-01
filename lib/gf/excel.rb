@@ -19,10 +19,13 @@ module GF
       @header.each_with_index do |v, i|
         @worksheet.add_cell(0, i, v)
       end
+=begin
+      # https://www.rubydoc.info/gems/rubyXL/3.3.11/RubyXL%2FLegacyWorksheet:change_column_width
       # 列位置は幅を小さく
       pos_a_size.times do |i|
         @worksheet.change_column_width(i, 3)
       end
+=end
 
       # Personインスタンスごとに行を追加
       p_a = sort_person(@mem.values)
