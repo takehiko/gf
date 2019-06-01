@@ -24,6 +24,88 @@ module GF
       end
     end
 
+    def build_pyramid_triangle_trigonal(lev = 3, lev2 = 1)
+      # トップダウンで変則（俵型+三角錐型）ピラミッドを構成する。
+      # 全体はlev段で、下のlev2段は三角錐型、上部は俵型である。
+      # lev2 == 1のとき、組み方は
+      # build_pyramid_triangle(lev)と同じになる（ただしnameはすべて
+      # i.j.kの形式となる）。
+      # lev2 == 2のとき、組み方は
+      # build_pyramid_triangle2(lev)と同じになる（ただしnameはすべて
+      # i.j.kの形式となる）。
+      # lev2 == lev - 1のとき、組み方は
+      # build_pyramid_trigonal(lev)と同じになる。
+      raise if lev < 3
+      raise if lev2 < 1
+      raise if lev <= lev2
+
+      name_a = [] # 三角錐型の処理用
+
+      # ボトムアップで、下からlev2段目から最上段までの
+      # 三角型（俵型）ピラミッドを構成する。
+      # lev2段目の名前をname_aに入れる。
+      # ToDo: triangle.rbのコードとの共通化
+      @level = lev
+      lev2.upto(lev) do |i|
+        1.upto(lev - i + 1) do |j|
+          name = compose_name(lv(i), 1, j)
+          # puts "DEBUG: name = compose(#{lv(i)}, 1, #{j}) = #{name}"
+          p = GF::Person.new(:name => name); add_person(p)
+          if i > lev2
+            [j, j + 1].each do |j2|
+              name2 = compose_name(lv(i - 1), 1, j2)
+              # puts "DEBUG: name2 = compose(#{lv(i - 1)}, 1, #{j2}) = #{name2}"
+              p.put_load(@mem[name2], 0.5)
+            end
+          else
+            name_a << name
+          end
+        end
+      end
+
+      # トップダウンでlev2段目から1段目まで
+      # 三角錐型（立体型）ピラミッドを構成する。
+      # ToDo: trigonal.rbのコードとの共通化
+      until name_a.empty?
+        name = name_a.shift
+        p = @mem[name]
+
+        i, j, k = decompose_name(name)
+
+        if lv(i) >= 3
+          i2 = i - 2 * (@opt[:descend] ? -1 : 1)
+          j2 = j + 1
+          [k, k + 1].each do |k2|
+            name2 = compose_name(i2, j2, k2)
+            if !@mem.key?(name2)
+              p2 = GF::Person.new(:name => name2)
+              add_person(p2)
+              name_a << name2
+            else
+              p2 = @mem[name2]
+            end
+            p.put_load(p2, @default_foot_rate)
+          end
+        end
+
+        if lv(i) >= 2
+          i2 = i - 1 * (@opt[:descend] ? -1 : 1)
+          j2 = j
+          [k, k + 1].each do |k2|
+            name2 = compose_name(i2, j2, k2)
+            if !@mem.key?(name2)
+              p2 = GF::Person.new(:name => name2)
+              add_person(p2)
+              name_a << name2
+            else
+              p2 = @mem[name2]
+            end
+            p.put_load(p2, @default_hand_rate)
+          end
+        end
+      end
+    end
+
     def set_triangle2_plc(*args)
       if args.length > 1
         set_triangle2_weight(args)

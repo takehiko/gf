@@ -139,7 +139,14 @@ module GF
         end
       elsif @opt.key?(:triangle2)
         require_relative "triangle2.rb"
-        build_pyramid_triangle2(@opt[:triangle2])
+        case @opt[:triangle2]
+        when Array
+          build_pyramid_triangle_trigonal(*@opt[:triangle2])
+        when Numeric
+          build_pyramid_triangle2(@opt[:triangle2])
+        else
+          raise
+        end
         if @opt[:plc]
           method_plc = :set_triangle2_plc
         end

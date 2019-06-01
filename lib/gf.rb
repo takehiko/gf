@@ -13,7 +13,7 @@ if __FILE__ == $0
   opt.on("-y", "--yagura=VAL",
          "Build wider tower (a.k.a. yagura)") {|v| h[:yagura] = v.to_i }
   opt.on("-u", "--triangle2=VAL",
-         "Build atypical triangular human pyramid") {|v| h[:triangle2] = v.to_i }
+         "Build atypical triangular human pyramid") {|v| h[:triangle2] = v.include?(",") ? v.split(",").map {|item| item.to_i} : v.to_i }
   opt.on("-m", "--placement=VAL",
          "Placement Method") {|v| h[:plc] = v.dup }
   opt.on("-z", "--zmax=VAL",
